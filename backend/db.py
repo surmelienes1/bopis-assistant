@@ -35,7 +35,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from backend.models import Inventory, Order, OrderItem, OrderItemStatus, Product
+from backend.models import (
+    Inventory,
+    Order,
+    OrderItem,
+    OrderItemStatus,
+    OrderStatus,
+    Product,
+)
 
 # ----------------------------------------------------------------------
 # Module-level state
@@ -243,6 +250,35 @@ def update_order_item_status(
             order.updated_at = datetime.now(timezone.utc)
             return True
         return False
+
+
+def update_order_status(order_id: str, status: OrderStatus) -> bool:
+    """Update one order's top-level status.
+
+    Added for api.py's POST /orders/{order_id}/complete endpoint: none
+    of the write functions above touch Order.status, and the API layer
+    must not reach into _ORDERS directly to change it (see this
+    module's own docstring — write functions here are the ONLY way
+    state may change). Returns False, rather than raising, if the
+    order doesn't exist — consistent with update_order_item_status's
+    "expected failure, not a bug" signaling.
+
+    This function does not decide WHETHER a transition is valid (e.g.
+    "every item must be PICKED or SUBSTITUTED before moving to READY")
+    — that business rule belongs to the caller, which evaluates it
+    against the existing OrderItem/RESOLVED_ITEM_STATUSES definitions
+    in models.py before ever calling this function. This function only
+    applies a status value its caller has already decided is correct.
+    """
+    _ensure_initialized()
+    with _DB_LOCK:
+        order = _ORDERS.get(order_id)
+        if order is None:
+            return False
+        _ORDERS[order_id] = order.model_copy(
+            update={"status": status, "updated_at": datetime.now(timezone.utc)}
+        )
+        return True
 
 
 def append_audit_event(event: dict[str, Any]) -> None:
