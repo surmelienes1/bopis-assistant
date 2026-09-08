@@ -1,8 +1,29 @@
+# Web framework / server -- backend/api.py imports FastAPI, CORS
+# middleware, response classes; uvicorn is the ASGI server the run
+# command (`uvicorn backend.api:app --reload`) requires, even though
+# nothing imports it directly.
 fastapi
-uvicorn[standard]
+uvicorn
+
+# Schema validation -- backend/models.py, backend/api.py.
 pydantic
+
+# backend/api.py calls load_dotenv() to read .env at startup.
 python-dotenv
-anthropic
+
+# backend/llm_client.py's OpenAI-compatible fallback branch, and the
+# exception types (openai.APIConnectionError, openai.APIStatusError)
+# _is_transient_provider_error() checks against regardless of which
+# branch is active.
+openai
+
+# backend/llm_client.py's SAP AI Core / GenAI Hub branch
+# (_build_sap_ai_core_client), used only when AICORE_CLIENT_ID is set.
+# Not required for the plain-OpenAI fallback path, but it IS a real
+# import in the current code, so it belongs here rather than being
+# left for the reader to discover at runtime via ImportError.
+ai-core-sdk
+generative-ai-hub-sdk
+
+# smoke_test.py's HTTP calls against the running server.
 requests
-pytest
-httpx
