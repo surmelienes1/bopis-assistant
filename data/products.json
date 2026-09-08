@@ -1,0 +1,200 @@
+[
+    {
+      "id": "SKU-COKE-ZERO-150",
+      "name": "Coca-Cola Zero 1.5L",
+      "brand": "Coca-Cola",
+      "category": "soda",
+      "size": 1.5,
+      "unit": "L",
+      "price": 2.49,
+      "attributes": {"diet": "zero_sugar"},
+      "allergens": []
+    },
+    {
+      "id": "SKU-COKE-ZERO-100",
+      "name": "Coca-Cola Zero 1L",
+      "brand": "Coca-Cola",
+      "category": "soda",
+      "size": 1.0,
+      "unit": "L",
+      "price": 1.99,
+      "attributes": {"diet": "zero_sugar"},
+      "allergens": []
+    },
+    {
+      "id": "SKU-COKE-ZERO-6X330",
+      "name": "Coca-Cola Zero 6x330ml",
+      "brand": "Coca-Cola",
+      "category": "soda",
+      "size": 1.98,
+      "unit": "L",
+      "price": 3.49,
+      "attributes": {"diet": "zero_sugar", "pack_count": 6},
+      "allergens": []
+    },
+    {
+      "id": "SKU-COKE-ORIG-150",
+      "name": "Coca-Cola Original 1.5L",
+      "brand": "Coca-Cola",
+      "category": "soda",
+      "size": 1.5,
+      "unit": "L",
+      "price": 2.49,
+      "attributes": {"diet": "regular"},
+      "allergens": []
+    },
+    {
+      "id": "SKU-PEPSI-MAX-150",
+      "name": "Pepsi Max 1.5L",
+      "brand": "Pepsi",
+      "category": "soda",
+      "size": 1.5,
+      "unit": "L",
+      "price": 2.29,
+      "attributes": {"diet": "zero_sugar"},
+      "allergens": []
+    },
+    {
+      "id": "SKU-SPRITE-150",
+      "name": "Sprite 1.5L",
+      "brand": "Coca-Cola",
+      "category": "soda",
+      "size": 1.5,
+      "unit": "L",
+      "price": 2.39,
+      "attributes": {"diet": "regular"},
+      "allergens": []
+    },
+    {
+      "id": "SKU-MILK-WHOLE-1L",
+      "name": "Whole Milk 1L",
+      "brand": "Alpenfrisch",
+      "category": "dairy",
+      "size": 1.0,
+      "unit": "L",
+      "price": 1.09,
+      "attributes": {"fat_content": "3.5%"},
+      "allergens": ["milk"]
+    },
+    {
+      "id": "SKU-MILK-SKIM-1L",
+      "name": "Skim Milk 1L",
+      "brand": "Alpenfrisch",
+      "category": "dairy",
+      "size": 1.0,
+      "unit": "L",
+      "price": 1.05,
+      "attributes": {"fat_content": "0.1%"},
+      "allergens": ["milk"]
+    },
+    {
+      "id": "SKU-YOGURT-NAT-500",
+      "name": "Natural Yogurt 500g",
+      "brand": "Alpenfrisch",
+      "category": "dairy",
+      "size": 500,
+      "unit": "g",
+      "price": 1.79,
+      "attributes": {},
+      "allergens": ["milk"]
+    },
+    {
+      "id": "SKU-BANANA-1KG",
+      "name": "Bananas 1kg",
+      "brand": "Fresh Farms",
+      "category": "produce",
+      "size": 1.0,
+      "unit": "kg",
+      "price": 1.49,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-APPLE-1KG",
+      "name": "Apples 1kg",
+      "brand": "Fresh Farms",
+      "category": "produce",
+      "size": 1.0,
+      "unit": "kg",
+      "price": 2.19,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-TOMATO-1KG",
+      "name": "Tomatoes 1kg",
+      "brand": "Fresh Farms",
+      "category": "produce",
+      "size": 1.0,
+      "unit": "kg",
+      "price": 2.49,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-PASTA-SPAG-500",
+      "name": "Spaghetti 500g",
+      "brand": "Barilla",
+      "category": "grocery",
+      "size": 500,
+      "unit": "g",
+      "price": 1.29,
+      "attributes": {},
+      "allergens": ["gluten"]
+    },
+    {
+      "id": "SKU-PASTA-PENNE-500",
+      "name": "Penne 500g",
+      "brand": "Barilla",
+      "category": "grocery",
+      "size": 500,
+      "unit": "g",
+      "price": 1.29,
+      "attributes": {},
+      "allergens": ["gluten"]
+    },
+    {
+      "id": "SKU-PASTA-FUSILLI-500",
+      "name": "Fusilli 500g",
+      "brand": "De Cecco",
+      "category": "grocery",
+      "size": 500,
+      "unit": "g",
+      "price": 1.49,
+      "attributes": {},
+      "allergens": ["gluten"]
+    },
+    {
+      "id": "SKU-RICE-BASMATI-1KG",
+      "name": "Basmati Rice 1kg",
+      "brand": "Tilda",
+      "category": "grocery",
+      "size": 1.0,
+      "unit": "kg",
+      "price": 2.99,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-CHOC-DARK-100",
+      "name": "Dark Chocolate Bar 100g",
+      "brand": "Lindt",
+      "category": "grocery",
+      "size": 100,
+      "unit": "g",
+      "price": 2.99,
+      "attributes": {"cocoa_pct": 70},
+      "allergens": ["soy", "milk"]
+    },
+    {
+      "id": "SKU-CHIPS-SALT-150",
+      "name": "Salted Chips 150g",
+      "brand": "Lay's",
+      "category": "grocery",
+      "size": 150,
+      "unit": "g",
+      "price": 1.99,
+      "attributes": {"vegan": true},
+      "allergens": []
+    }
+  ]

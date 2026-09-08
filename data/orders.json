@@ -1,0 +1,96 @@
+[
+    {
+      "id": "ORD-1001",
+      "customer_id": "CUST-2001",
+      "store_id": "STORE-1",
+      "status": "ASSIGNED",
+      "pickup_deadline": "2026-09-09T17:30:00+02:00",
+      "created_at": "2026-09-08T18:05:00+02:00",
+      "updated_at": "2026-09-08T18:05:00+02:00",
+      "version": 1,
+      "items": [
+        {
+          "id": "ITEM-1001-1",
+          "order_id": "ORD-1001",
+          "product_id": "SKU-COKE-ZERO-150",
+          "requested_quantity": 2,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1001-2",
+          "order_id": "ORD-1001",
+          "product_id": "SKU-PASTA-SPAG-500",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1001-3",
+          "order_id": "ORD-1001",
+          "product_id": "SKU-BANANA-1KG",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1001-4",
+          "order_id": "ORD-1001",
+          "product_id": "SKU-MILK-WHOLE-1L",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        }
+      ]
+    },
+    {
+      "id": "ORD-1002",
+      "customer_id": "CUST-2002",
+      "store_id": "STORE-1",
+      "status": "ASSIGNED",
+      "pickup_deadline": "2026-09-09T18:00:00+02:00",
+      "created_at": "2026-09-08T18:10:00+02:00",
+      "updated_at": "2026-09-08T18:10:00+02:00",
+      "version": 1,
+      "items": [
+        {
+          "id": "ITEM-1002-1",
+          "order_id": "ORD-1002",
+          "product_id": "SKU-APPLE-1KG",
+          "requested_quantity": 2,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1002-2",
+          "order_id": "ORD-1002",
+          "product_id": "SKU-CHOC-DARK-100",
+          "requested_quantity": 3,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1002-3",
+          "order_id": "ORD-1002",
+          "product_id": "SKU-RICE-BASMATI-1KG",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        }
+      ]
+    }
+  ]
