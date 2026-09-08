@@ -1,0 +1,29 @@
+[
+    {
+      "store_id": "STORE-1",
+      "name": "Downtown Flagship",
+      "inventory_confidence": 0.95,
+      "distances_km": {
+        "STORE-2": 3.4,
+        "STORE-3": 6.1
+      }
+    },
+    {
+      "store_id": "STORE-2",
+      "name": "Uptown Express",
+      "inventory_confidence": 0.9,
+      "distances_km": {
+        "STORE-1": 3.4,
+        "STORE-3": 4.8
+      }
+    },
+    {
+      "store_id": "STORE-3",
+      "name": "Suburb Supercenter",
+      "inventory_confidence": 0.85,
+      "distances_km": {
+        "STORE-1": 6.1,
+        "STORE-2": 4.8
+      }
+    }
+  ]

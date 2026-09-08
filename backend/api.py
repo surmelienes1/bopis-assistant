@@ -45,6 +45,21 @@ POST .../unavailable.
 Session storage, auth, and persistence across restarts are all out of
 scope, matching db.py's own stated exclusions — this is a local,
 single-user prototype.
+
+Prompt 10 (design doc §6.3, §6.4) adds two small, deterministic,
+LLM-free capabilities alongside the substitution pipeline above:
+
+    GET  /inventory/nearby                         -- §6.3
+    POST /inventory/{store_id}/{product_id}/shelf-report -- §6.4
+
+Neither touches ai_ranking.py, candidates.py, ranking_validation.py,
+or transactions.py, and neither calls llm_client.py. See each route's
+own docstring for why: nearby-store ranking is a deterministic scoring
+function over seed metadata + live inventory, and shelf reporting is a
+plain audit-log write. Both are search/logging problems, not
+generative ones — see this file's own docstring above and the design
+doc's §6.1 for the pattern this project uses to decide where the model
+belongs at all.
 """
 
 from __future__ import annotations
@@ -138,6 +153,41 @@ class ResolveUnavailableRequest(BaseModel):
 # adding a second resolution later is a one-line change here rather
 # than a restructure of the validation branch that checks it.
 _SUPPORTED_RESOLUTIONS = {"REMOVE"}
+
+
+class ShelfReportRequest(BaseModel):
+    """Request body for POST /inventory/{store_id}/{product_id}/shelf-report.
+
+    `status` is a plain str, validated below against
+    _SUPPORTED_SHELF_STATUSES the same way SubstitutionRequest's
+    resolution field is validated -- an unsupported value is an
+    ordinary 400 business error, not a stricter Literal/enum at the
+    schema layer, for the same consistency reason ResolveUnavailableRequest
+    gives above.
+    """
+
+    status: str
+
+
+# The four shelf-observation statuses design doc §6.4 names. A set, in
+# the same spirit as _SUPPORTED_RESOLUTIONS above -- adding a fifth
+# status later is a one-line change here, not a restructure of the
+# validation branch that checks it.
+_SUPPORTED_SHELF_STATUSES = {"empty", "low", "damaged", "misplaced"}
+
+# Availability normalization for GET /inventory/nearby's scoring
+# formula (design doc §6.3) -- see that route's docstring for the full
+# formula. A raw available_quantity is divided by this constant and
+# capped at 1.0, so a nearby store's availability score saturates at
+# "fully available" once it's carrying at least this many units,
+# rather than letting an arbitrarily large quantity dominate the
+# score. Chosen to sit comfortably above every requested_quantity in
+# this prototype's seed orders (all 1-2 units) and near the upper end
+# of this catalog's typical per-store stock levels (see
+# data/inventory.json), so it meaningfully distinguishes "well
+# stocked" from "thin" without needing real sales-velocity data this
+# prototype doesn't have.
+_AVAILABILITY_REFERENCE_QTY = 20.0
 
 
 # ----------------------------------------------------------------------
@@ -426,3 +476,181 @@ def complete_order(order_id: str) -> JSONResponse:
         status_code=200,
         content={"status": "ok", "order_status": OrderStatus.READY.value},
     )
+
+
+# ----------------------------------------------------------------------
+# Prompt 10 -- deterministic, LLM-free stretch endpoints (design doc
+# §6.3 nearby-store availability, §6.4 shelf-depletion reporting).
+# Both are new, independent routes: neither reads from nor writes to
+# any order/item/substitution state above, and neither is on the
+# .../unavailable -> candidates -> ai_ranking -> ranking_validation
+# pipeline.
+# ----------------------------------------------------------------------
+
+
+@app.get("/inventory/nearby")
+def get_nearby_inventory(product_id: str, store_id: str) -> dict:
+    """Answer "this product is unavailable at the current store -- is it
+    available at nearby stores?" (design doc §6.3).
+
+    This is intentionally a deterministic, LLM-free lookup. It never
+    calls llm_client.py, ai_ranking.py, candidates.py, or
+    ranking_validation.py -- nearby-store discovery is a search/ranking
+    problem over known, structured data (seed store distances + live
+    inventory), not a generative one. The model is useful for
+    substitution REASONING (why THIS product is a good stand-in for
+    THAT one -- see ai_ranking.py), never for a factual lookup like
+    "how much stock does store X have," which this prototype already
+    knows exactly, with no ambiguity for a model to resolve.
+
+    Scoring formula, applied per nearby store and documented here for
+    reproducibility:
+
+        score = availability * (1 / distance_km) * inventory_confidence
+
+    where:
+      - availability = min(available_quantity / _AVAILABILITY_REFERENCE_QTY, 1.0)
+        A deterministic, capped linear normalization of the nearby
+        store's raw on-hand quantity for this product. See
+        _AVAILABILITY_REFERENCE_QTY's own comment for why that
+        constant was chosen.
+      - 1 / distance_km rewards closer stores. `distance_km` comes
+        from the deterministic seed metadata in data/stores.json
+        (via db.get_store_distances) -- never computed, geocoded, or
+        routed.
+      - inventory_confidence is a fixed, deterministic per-store trust
+        value, also from data/stores.json (via
+        db.get_store_inventory_confidence) -- a stand-in for a real
+        signal a production system might have (e.g. RFID-tracked vs.
+        manual-count stockrooms), not a computed one.
+
+    A nearby store is excluded entirely (not scored at 0) if it has no
+    inventory row for `product_id`, or an available_quantity of zero
+    or less -- "nearby but has none" isn't useful information for an
+    associate deciding where to send a customer. The requesting
+    (current) store itself is never included: db.get_store_distances()
+    only ever returns OTHER known stores by construction.
+
+    Returns nearby stores sorted by descending score. Raises 404 if
+    `product_id` isn't in the catalog or `store_id` isn't a known
+    store.
+    """
+    product = db.get_product(product_id)
+    if product is None:
+        raise HTTPException(
+            status_code=404, detail=f"Product {product_id!r} not found."
+        )
+
+    if not db.store_exists(store_id):
+        raise HTTPException(status_code=404, detail=f"Store {store_id!r} not found.")
+
+    # By construction (see db.get_store_distances()'s own docstring),
+    # this never includes store_id itself.
+    distances = db.get_store_distances(store_id) or {}
+
+    nearby_stores: list[dict] = []
+    for other_store_id, distance_km in distances.items():
+        inv = db.get_inventory(product_id, other_store_id)
+        if inv is None or inv.quantity <= 0:
+            continue
+
+        confidence = db.get_store_inventory_confidence(other_store_id)
+        if confidence is None:
+            # Defensive only: a store_id appearing in another store's
+            # distances_km map but missing its own top-level entry in
+            # stores.json would be a seed-data bug, not a runtime
+            # condition to paper over with a fabricated confidence
+            # value -- skip it rather than guess.
+            continue
+
+        availability = min(inv.quantity / _AVAILABILITY_REFERENCE_QTY, 1.0)
+        score = availability * (1.0 / distance_km) * confidence
+
+        nearby_stores.append(
+            {
+                "store_id": other_store_id,
+                "distance_km": distance_km,
+                "available_quantity": inv.quantity,
+                "inventory_confidence": confidence,
+                "score": round(score, 3),
+            }
+        )
+
+    nearby_stores.sort(key=lambda s: s["score"], reverse=True)
+
+    return {
+        "product_id": product_id,
+        "source_store_id": store_id,
+        "nearby_stores": nearby_stores,
+    }
+
+
+@app.post("/inventory/{store_id}/{product_id}/shelf-report")
+def report_shelf_status(
+    store_id: str, product_id: str, body: ShelfReportRequest
+) -> dict:
+    """An associate logs a physical shelf-stock observation (design doc
+    §6.4) -- "empty," "low," "damaged," or "misplaced."
+
+    This is a logging endpoint only. It appends one audit event via
+    the existing db.append_audit_event() mechanism and returns a
+    confirmation; it never touches Inventory.quantity. A shelf report
+    is an associate's unverified, in-the-moment observation, not a
+    reconciled stock count -- letting it silently adjust the
+    authoritative quantity that decrement_inventory()/the substitution
+    pipeline depend on would conflate two different kinds of data
+    (what accounting believes is in stock vs. what an associate just
+    glanced at) with two very different trust levels.
+
+    No LLM call. §6.4's actual AI opportunity is a small forecasting/
+    anomaly model trained over historical shelf reports plus inventory
+    movement -- e.g. predicting stockout probability, or surfacing a
+    pattern like "this SKU repeatedly depletes ~17:00 Fridays." That
+    model is deliberately out of scope for this prototype, which only
+    needs the event captured for a future training set, not analyzed
+    now.
+
+    `status` is checked against _SUPPORTED_SHELF_STATUSES before
+    either db.py lookup runs (same ordering convention as
+    resolve_unavailable_item()'s resolution check above) -- a
+    malformed request shouldn't cost a lookup before it's rejected.
+    Raises 404 if `product_id` isn't in the catalog or `store_id`
+    isn't a known store.
+    """
+    if body.status not in _SUPPORTED_SHELF_STATUSES:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unsupported shelf status {body.status!r}; supported "
+                f"values: {sorted(_SUPPORTED_SHELF_STATUSES)}."
+            ),
+        )
+
+    if db.get_product(product_id) is None:
+        raise HTTPException(
+            status_code=404, detail=f"Product {product_id!r} not found."
+        )
+
+    if not db.store_exists(store_id):
+        raise HTTPException(status_code=404, detail=f"Store {store_id!r} not found.")
+
+    db.append_audit_event(
+        {
+            "event_type": "shelf_report",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "store_id": store_id,
+            "product_id": product_id,
+            "status": body.status,
+            # Same explicit placeholder as every other audit event in
+            # this prototype -- no authenticated associate identity
+            # exists anywhere yet.
+            "associate_id": "prototype",
+        }
+    )
+
+    return {
+        "status": "ok",
+        "store_id": store_id,
+        "product_id": product_id,
+        "shelf_status": body.status,
+    }

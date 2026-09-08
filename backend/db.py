@@ -3,12 +3,25 @@ backend/db.py
 
 In-memory data-access layer for the BOPIS prototype.
 
-Loads the three seed JSON files (products, inventory, orders) into
-module-level dicts at startup and exposes retrieval plus a small,
+Loads the four seed JSON files (products, inventory, orders, stores)
+into module-level dicts at startup and exposes retrieval plus a small,
 closed set of mutation functions. Ranking, filtering, and substitution
 policy do NOT belong here — see candidates.py and ai_ranking.py (later
 prompts). This file answers "what is the state right now" and "apply
 this one already-decided state change" — nothing decides anything here.
+
+stores.json (Prompt 10) is a small, separate store-metadata seed file
+— NOT a redesign of the inventory schema. Inventory rows still carry
+exactly the fields they always have (product_id, store_id, quantity,
+reserved_quantity, version, updated_at); nothing about "where is this
+store" or "how far apart are two stores" belongs on a per-product-per-
+store row, and duplicating a distance value across every inventory row
+for the same store pair would be redundant, error-prone seed data. A
+handful of stores, each carrying its distances to every other store
+plus one deterministic inventory-trust value, is the smallest
+structure that represents that data once. See get_store_distances()
+and get_store_inventory_confidence() below for the read API, and
+api.py's GET /inventory/nearby for the only caller.
 
 No persistence across restarts — deliberately, same scope exclusion as
 the Watchtower project's db.py. A restart resets to the seed JSON.
@@ -53,6 +66,15 @@ _INVENTORY: dict[tuple[str, str], Inventory] = {}
 _ORDERS: dict[str, Order] = {}
 _AUDIT_LOG: list[dict[str, Any]] = []
 
+# store_id -> {"name": str, "inventory_confidence": float,
+#              "distances_km": {other_store_id: float, ...}}
+# Deterministic seed metadata only (Prompt 10, design doc §6.3) — see
+# stores.json and the module docstring above. Plain dicts, not a
+# Pydantic model: this data has no mutation path and no business logic
+# of its own (unlike Product/Inventory/Order), just lookups, so a
+# model class would add ceremony without adding safety.
+_STORES: dict[str, dict[str, Any]] = {}
+
 # All of the above is shared, mutable state read and written from
 # synchronous FastAPI route handlers, which run in a worker thread pool
 # rather than strictly sequentially (same situation as Watchtower's
@@ -74,7 +96,8 @@ _initialized = False
 
 
 def init_db(data_dir: str | Path) -> None:
-    """Load products.json, inventory.json, and orders.json into memory.
+    """Load products.json, inventory.json, orders.json, and stores.json
+    into memory.
 
     Called once at process startup (see api.py's lifespan). Safe to call
     again — e.g. in tests, to reset state — since it fully replaces the
@@ -87,6 +110,7 @@ def init_db(data_dir: str | Path) -> None:
         products = json.loads((data_dir / "products.json").read_text())
         inventory = json.loads((data_dir / "inventory.json").read_text())
         orders = json.loads((data_dir / "orders.json").read_text())
+        stores = json.loads((data_dir / "stores.json").read_text())
 
         _PRODUCTS.clear()
         _PRODUCTS.update({p["id"]: Product(**p) for p in products})
@@ -98,6 +122,9 @@ def init_db(data_dir: str | Path) -> None:
 
         _ORDERS.clear()
         _ORDERS.update({o["id"]: Order(**o) for o in orders})
+
+        _STORES.clear()
+        _STORES.update({s["store_id"]: s for s in stores})
 
         _AUDIT_LOG.clear()
         _initialized = True
@@ -147,6 +174,49 @@ def get_inventory(product_id: str, store_id: str) -> Inventory | None:
     with _DB_LOCK:
         inv = _INVENTORY.get((product_id, store_id))
         return inv.model_copy() if inv is not None else None
+
+
+def store_exists(store_id: str) -> bool:
+    """True if `store_id` is a known store in the store-metadata seed
+    data (stores.json). The only "does this store exist" check this
+    prototype has — there is no Store table/model, only this metadata
+    dict and the store_id strings already used inside Inventory/Order.
+    Used for 404 handling on store-scoped endpoints (Prompt 10's
+    GET /inventory/nearby and POST .../shelf-report).
+    """
+    _ensure_initialized()
+    with _DB_LOCK:
+        return store_id in _STORES
+
+
+def get_store_distances(store_id: str) -> dict[str, float] | None:
+    """Return `store_id`'s deterministic seed distances (km) to every
+    OTHER known store, or None if `store_id` itself isn't known.
+
+    Never includes `store_id` itself — a store's distance to itself is
+    undefined here, not zero, since nothing downstream should ever be
+    able to treat "the current store" as one of its own nearby-store
+    candidates. Returns a copy so a caller can't mutate our seed state
+    by editing the dict it got back.
+    """
+    _ensure_initialized()
+    with _DB_LOCK:
+        store = _STORES.get(store_id)
+        return dict(store["distances_km"]) if store is not None else None
+
+
+def get_store_inventory_confidence(store_id: str) -> float | None:
+    """Return the deterministic `inventory_confidence` seed value for
+    `store_id`, or None if `store_id` isn't known.
+
+    A fixed, seed-data stand-in for a real per-store signal a
+    production system might have (e.g. RFID-tracked vs. manual-count
+    stockrooms) — never computed, inferred, or updated at runtime.
+    """
+    _ensure_initialized()
+    with _DB_LOCK:
+        store = _STORES.get(store_id)
+        return store["inventory_confidence"] if store is not None else None
 
 
 def list_products_by_category(
