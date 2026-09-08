@@ -74,8 +74,8 @@
         {
           "id": "ITEM-1002-2",
           "order_id": "ORD-1002",
-          "product_id": "SKU-CHOC-DARK-100",
-          "requested_quantity": 3,
+          "product_id": "SKU-PASTA-SPAG-500",
+          "requested_quantity": 1,
           "picked_quantity": 0,
           "status": "PENDING",
           "substituted_product_id": null,
@@ -84,7 +84,7 @@
         {
           "id": "ITEM-1002-3",
           "order_id": "ORD-1002",
-          "product_id": "SKU-RICE-BASMATI-1KG",
+          "product_id": "SKU-MILK-WHOLE-1L",
           "requested_quantity": 1,
           "picked_quantity": 0,
           "status": "PENDING",

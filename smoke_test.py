@@ -4,69 +4,44 @@ smoke_test.py
 Small, executable integration smoke test for the BOPIS prototype's
 vertical slice, run against a REAL, already-running FastAPI server
 (`uvicorn backend.api:app`) -- not against the Python modules directly.
-This is a demo/integration check, not a replacement for a real test
-suite: it exercises exactly one path through the system and stops.
 
-The path, end to end, over real HTTP:
+The script exercises the current end-to-end workflow over real HTTP:
 
     GET order
       -> POST item unavailable
-      -> receive VALIDATED recommendations (AI or deterministic fallback
-         -- this script never assumes which; ranking_validation.py
-         guarantees both shapes are identical, so treating whatever
-         /unavailable returned as ground truth is correct either way)
-      -> select a returned candidate (never a hardcoded product_id)
+      -> receive validated recommendations
+      -> select a returned candidate
       -> POST substitution with a fresh idempotency key
-      -> GET order again, verify the item is PICKED with the right
-         substituted_product_id
-      -> POST complete, verify the order reaches READY
+      -> GET order and verify the item is PICKED
+      -> for zero-candidate items, explicitly REMOVE the item
+      -> POST complete
+      -> verify the order reaches READY
 
-A note on WHY this script touches two seeded orders, not one
--------------------------------------------------------------
-The brief for this script named ORD-1001/STORE-1 as "the" scenario, and
-that order IS used below for the headline substitution walk-through --
-it's the exact worked example in the design doc (Coca-Cola Zero 1.5L,
-§6.2). But running the real filter chain in candidates.py against the
-real seed data (not by assumption -- this was actually executed)
-surfaces a genuine, documented interaction of two independently correct
-policies, not a bug in this script or in candidates.py:
+The script deliberately uses two seeded orders.
 
-    ITEM-1001-3 is SKU-BANANA-1KG (produce, EUR 1.49). Its only
-    same-category neighbors are apples (EUR 2.19) and tomatoes
-    (EUR 2.49) -- both outside candidates.py's +/-30% price-substitution
-    band. get_substitution_candidates() therefore returns an EMPTY list
-    for this item, which is the hard-filter chain working exactly as
-    designed (see candidates.py's own docstring: "a candidate either
-    qualifies or it's gone, no LLM judgment anywhere in this file").
+ORD-1001 is the main worked example from the design: Coca-Cola Zero 1.5L
+is unavailable and receives substitution recommendations. Other items
+exercise the same substitution path. The banana has no valid candidate
+after the deterministic same-category, stock, and +/-30% price filters,
+so the script verifies that /complete initially refuses while the item is
+PENDING, then exercises the explicit /resolve-unavailable endpoint and
+verifies that the order can subsequently reach READY.
 
-Separately, the current backend/api.py exposes only two item-mutation
-endpoints -- .../unavailable+.../substitution, and no plain "pick this
-in-stock item" endpoint (the design doc's §9 lists one; it wasn't part
-of what got built -- see README's "Deliberate scope exclusions"). So
-the ONLY way any item on an order can leave PENDING today is through
-the substitution path.
+ORD-1002 provides a second full success path in which every seeded item
+has an in-policy substitution candidate, allowing the smoke test to
+verify a complete order -> READY transition independently.
 
-Put those two true facts together: ITEM-1001-3 has no path out of
-PENDING via the current API, so ORD-1001 as seeded cannot reach READY
-today -- not because anything is broken, but because a real produce SKU
-has no in-policy substitute in this catalog. Forcing this script to
-reach READY on ORD-1001 would mean silently loosening the price band or
-inventing a pick endpoint -- exactly the kind of scope-widening this
-prototype's brief says not to do.
+Important boundary:
 
-So this script demonstrates BOTH real behaviors instead of hiding
-either one:
-  1. On ORD-1001: resolve every item that DOES have a valid substitute
-     (3 of 4), then call /complete and verify it correctly REFUSES with
-     a 400 naming the one item that can't be resolved -- proving the
-     FR-7 completion gate works, not just the substitution path.
-  2. On ORD-1002 (every item's price is within band of a same-category,
-     in-stock neighbor -- also verified against the real filter chain,
-     not assumed): resolve every item and verify the order actually
-     reaches READY, so the full success path is exercised somewhere.
+  - candidates.py determines the trusted candidate universe.
+  - ai_ranking.py may rank only those candidates.
+  - ranking_validation.py rejects hallucinated or malformed model output.
+  - transactions.py performs the authoritative substitution commit.
+  - /resolve-unavailable is deterministic and does not call the LLM.
+  - /complete remains the authoritative completion gate.
 
-Nothing above required touching api.py, candidates.py, or the seed
-data -- this script only calls the API as a client would.
+This is an integration smoke test, not a replacement for a full unit or
+concurrency test suite.
 """
 
 from __future__ import annotations
@@ -85,7 +60,7 @@ TIMEOUT_SECONDS = 10.0
 # RESOLVED_ITEM_STATUSES -- duplicated as plain strings here rather than
 # imported, since this script talks to the API over HTTP like any other
 # client, not by reaching into backend/ internals.
-_RESOLVED_STATUSES = {"PICKED", "SUBSTITUTED"}
+_RESOLVED_STATUSES = {"PICKED", "SUBSTITUTED", "UNAVAILABLE"}
 
 
 def fail(message: str) -> None:
@@ -207,12 +182,53 @@ def verify_item_picked(order_id: str, item_id: str, expected_product_id: str) ->
         )
 
 
+def resolve_unavailable_item(order_id: str, item_id: str) -> None:
+    """Explicitly remove an item that has no suitable substitute.
+
+    This exercises the API's deterministic zero-candidate resolution
+    path: no inventory is modified, no LLM is involved, and the item
+    becomes UNAVAILABLE so the order can still reach READY.
+    """
+    resp = request(
+        "POST",
+        f"/orders/{order_id}/items/{item_id}/resolve-unavailable",
+        json={"resolution": "REMOVE"},
+    )
+    if resp.status_code != 200:
+        fail(
+            f"POST /orders/{order_id}/items/{item_id}/resolve-unavailable "
+            f"returned {resp.status_code}: {resp.text}"
+        )
+
+    order = get_order(order_id)
+    updated = next((i for i in order["items"] if i["id"] == item_id), None)
+    if updated is None:
+        fail(f"Item {item_id} vanished from order {order_id} after removal.")
+
+    if updated["status"] != "UNAVAILABLE":
+        fail(
+            f"Expected {item_id} status UNAVAILABLE after removal, got "
+            f"{updated['status']!r}."
+        )
+
+    if updated.get("picked_quantity") != 0:
+        fail(
+            f"Expected {item_id}.picked_quantity == 0 after removal, got "
+            f"{updated.get('picked_quantity')!r}."
+        )
+
+    print(
+        f"    {item_id}: no suitable substitute -> explicitly removed "
+        f"(status=UNAVAILABLE)"
+    )
+
+
 def resolve_all_resolvable_items(order_id: str) -> list[str]:
-    """Walk every currently-PENDING item on `order_id` through
-    resolve_item_via_substitution(), verifying each acceptance against
-    a fresh GET before moving on. Returns the ids of items that could
-    NOT be resolved (zero recommendations) so the caller can decide
-    what to expect from /complete afterward.
+    """Walk every currently-PENDING item through the substitution path.
+
+    Returns item IDs for which the real candidate pipeline produced zero
+    recommendations. Those items are not silently removed: the caller
+    must explicitly resolve them through the unavailable-item API.
     """
     order = get_order(order_id)
     pending = [i for i in order["items"] if i["status"] == "PENDING"]
@@ -233,31 +249,23 @@ def main() -> None:
     print(f"BOPIS smoke test against {BASE_URL}\n")
 
     # --- ORD-1001: the design doc's worked example (Coca-Cola Zero 1.5L) ---
-    # Resolves every item that has a valid substitute, then proves the
-    # FR-7 completion gate correctly refuses to finish the order while
-    # ITEM-1001-3 (no in-band substitute -- see module docstring) is
-    # still PENDING.
+    # Resolve every item that has a valid substitute. The banana has no
+    # in-policy substitute, so first prove that /complete correctly refuses
+    # while it remains PENDING. Then explicitly remove that item through
+    # the deterministic unavailable-item path and prove the full order
+    # can reach READY.
     print("ORD-1001 / STORE-1")
     still_pending = resolve_all_resolvable_items("ORD-1001")
 
-    resp = request("POST", "/orders/ORD-1001/complete")
-    if not still_pending:
-        # Only true if a future data/policy change gives every item a
-        # substitute -- handle it as a real success rather than assuming
-        # today's gap forever.
-        if resp.status_code != 200 or resp.json().get("order_status") != "READY":
-            fail(
-                "All ORD-1001 items resolved but /complete did not return "
-                f"200/READY: {resp.status_code} {resp.text}"
-            )
-        print("  /complete -> 200 READY (every item ended up resolvable)")
-    else:
+    if still_pending:
+        resp = request("POST", "/orders/ORD-1001/complete")
         if resp.status_code != 400:
             fail(
                 "Expected /complete to refuse with 400 while "
                 f"{still_pending} remain PENDING, got {resp.status_code}: "
                 f"{resp.text}"
             )
+
         body = resp.json()
         open_item_ids = {oi.get("item_id") for oi in body.get("open_items", [])}
         if not set(still_pending) <= open_item_ids:
@@ -265,10 +273,30 @@ def main() -> None:
                 f"/complete's open_items {open_item_ids} did not include "
                 f"the still-unresolved item(s) {still_pending}."
             )
+
         print(
             f"  /complete correctly refused (400) -- open_items includes "
             f"{sorted(open_item_ids)}, confirming the FR-7 completion gate."
         )
+
+        for item_id in still_pending:
+            resolve_unavailable_item("ORD-1001", item_id)
+
+    resp = request("POST", "/orders/ORD-1001/complete")
+    if resp.status_code != 200:
+        fail(
+            f"POST /orders/ORD-1001/complete returned "
+            f"{resp.status_code}: {resp.text}"
+        )
+
+    order_status = resp.json().get("order_status")
+    if order_status != "READY":
+        fail(
+            f"Expected ORD-1001 to reach READY after resolving all "
+            f"exceptions, got {order_status!r}."
+        )
+
+    print(f"  /complete -> 200, order_status={order_status}")
 
     # --- ORD-1002: every item has an in-band substitute (verified against
     # the real filter chain, not assumed) -- this is where the full
