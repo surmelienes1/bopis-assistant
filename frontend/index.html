@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BOPIS Associate Assistant</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230f766e'/><path d='M9 13h14l-1.4 11.2a2 2 0 0 1-2 1.8H12.4a2 2 0 0 1-2-1.8L9 13z' fill='%23ffffff'/><path d='M12 13v-2a4 4 0 0 1 8 0v2' stroke='%23ffffff' stroke-width='1.8' fill='none'/></svg>">
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --border: #e2e4e9;
+    --text: #1a1b1f;
+    --muted: #6b6f76;
+    --accent: #0f766e;
+    --accent-hover: #0b5c56;
+
+    --success-bg: #e7f6ec; --success-text: #1e6b39; --success-border: #a9dfba;
+    --warning-bg: #fef3e2; --warning-text: #92450e; --warning-border: #f7cd8f;
+    --danger-bg:  #fdecea; --danger-text:  #a3231b; --danger-border:  #f3b7b0;
+    --neutral-bg: #eef1f4; --neutral-text: #454b52; --neutral-border: #d7dce1;
+
+    --shadow-sm: 0 1px 2px rgba(20, 23, 33, 0.05);
+    --shadow-md: 0 2px 10px rgba(20, 23, 33, 0.08);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.93em;
+  }
+
+  /* ---- shell ---------------------------------------------------- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-badge {
+    width: 32px; height: 32px; flex-shrink: 0; border-radius: 8px;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-sm);
+  }
+  .brand h1 { font-size: 15px; margin: 0; font-weight: 700; letter-spacing: -0.01em; }
+  .brand .sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 22px 20px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .panel-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin: 0 0 12px 0;
+  }
+
+  /* ---- order summary --------------------------------------------- */
+  .order-summary-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .order-id { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+  .order-meta { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+
+  /* ---- badges ------------------------------------------------------ */
+  .badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .badge-success { background: var(--success-bg); color: var(--success-text); border-color: var(--success-border); }
+  .badge-warning { background: var(--warning-bg); color: var(--warning-text); border-color: var(--warning-border); }
+  .badge-danger  { background: var(--danger-bg);  color: var(--danger-text);  border-color: var(--danger-border); }
+  .badge-neutral { background: var(--neutral-bg); color: var(--neutral-text); border-color: var(--neutral-border); }
+
+  /* ---- items -------------------------------------------------------- */
+  .items-list { display: flex; flex-direction: column; gap: 10px; }
+  .item-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    background: var(--bg);
+  }
+  .item-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .item-product { font-size: 14px; font-weight: 600; }
+  .item-qty { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .item-sub-note { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .item-actions { margin-top: 10px; }
+
+  /* ---- buttons -------------------------------------------------------- */
+  .btn {
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 120ms ease, opacity 120ms ease, transform 80ms ease;
+  }
+  .btn:active:not(:disabled) { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .btn-sm { font-size: 12.5px; padding: 6px 11px; }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn-secondary { background: var(--panel); border-color: var(--border); color: var(--text); }
+  .btn-secondary:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .btn-tertiary { background: transparent; border-color: transparent; color: var(--muted); }
+  .btn-tertiary:hover:not(:disabled) { color: var(--text); background: var(--neutral-bg); }
+  .btn-error-outline { background: #fff; border-color: var(--danger-border); color: var(--danger-text); }
+  .btn-error-outline:hover:not(:disabled) { background: var(--danger-bg); }
+
+  /* ---- banners / inline errors ------------------------------------------ */
+  .banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    border: 1px solid transparent;
+  }
+  .banner-error   { background: var(--danger-bg);  color: var(--danger-text);  border-color: var(--danger-border); }
+  .banner-warning { background: var(--warning-bg); color: var(--warning-text); border-color: var(--warning-border); }
+  .banner-success { background: var(--success-bg); color: var(--success-text); border-color: var(--success-border); }
+
+  .inline-error {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 12.5px;
+    color: var(--danger-text);
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    border-radius: 7px;
+    padding: 8px 10px;
+  }
+  .complete-error { margin-top: 12px; flex-direction: column; align-items: flex-start; }
+  .open-items-list { margin: 4px 0 2px 0; padding-left: 18px; }
+  .open-items-list li { margin: 2px 0; }
+
+  /* ---- recommendations ---------------------------------------------------- */
+  .recommendations { margin-top: 10px; }
+  .rec-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .rec-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 12px;
+    background: var(--panel);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .rec-card-unavailable { opacity: 0.6; }
+  .rec-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .rec-product-id { font-size: 13px; font-weight: 700; }
+  .score-chip {
+    font-size: 10.5px;
+    color: var(--muted);
+    background: var(--neutral-bg);
+    border: 1px solid var(--neutral-border);
+    border-radius: 999px;
+    padding: 1px 7px;
+    flex-shrink: 0;
+  }
+  .rec-reason { font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+  .rec-card-actions { display: flex; gap: 8px; margin-top: 2px; }
+  .rec-unavailable-note { font-size: 12px; font-weight: 600; color: var(--danger-text); }
+  .empty-recs {
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .complete-section { display: flex; flex-direction: column; align-items: flex-start; }
+  .empty-state { text-align: center; color: var(--muted); padding: 60px 12px; font-size: 13.5px; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-badge" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path d="M5 8h14l-1.1 9.6A2 2 0 0 1 15.9 19H8.1a2 2 0 0 1-2-1.4L5 8z" fill="#fff"/>
+        <path d="M8 8V6a4 4 0 0 1 8 0v2" stroke="#fff" stroke-width="1.6" fill="none"/>
+      </svg>
+    </div>
+    <div>
+      <h1>BOPIS Associate Assistant</h1>
+      <div class="sub">Pickup fulfillment &amp; substitutions</div>
+    </div>
+  </div>
+  <button class="btn btn-secondary btn-sm" data-action="refresh-order" id="refresh-btn">Refresh order</button>
+</header>
+
+<div class="page" id="app"></div>
+
+<script>
+/*
+ * Thin vanilla-JS view over the BOPIS backend. This file renders state and
+ * sends associate actions to the API -- it never ranks, filters, scores, or
+ * decides substitution/completion outcomes itself (see api.py's own
+ * "architecture rules" section, which this file mirrors on the client side).
+ * After every mutation the order is re-fetched from the backend rather than
+ * hand-patched locally, so the UI never drifts from server-side truth.
+ *
+ * Two contract notes worth calling out, since they diverge from what a
+ * naive reading of the brief might assume:
+ *
+ *  1. A validated recommendation (POST .../unavailable) is exactly
+ *     {product_id, score, reason} -- see ranking_validation.py's
+ *     _validate_single_recommendation() / _fallback_rank(). It does NOT
+ *     carry name/brand/size/price, even though the internal candidate list
+ *     does before validation strips it down. This UI only renders what's
+ *     actually in that response.
+ *
+ *  2. The idempotency key for an "Accept" is generated once per logical
+ *     acceptance (one product, one attempt-that-may-be-retried) and reused
+ *     across retries of a request that may not have completed (network
+ *     error / unexpected failure). A 409 conflict is a *terminal*,
+ *     already-cached outcome for that key (transactions.py stores conflict
+ *     results under the idempotency key too), so a 409 clears the stored
+ *     key -- a further explicit Accept click is a new logical attempt and
+ *     earns a fresh key, rather than replaying the same cached conflict
+ *     forever.
+ */
+
+const ORDER_ID = "ORD-1001";
+const RESOLVED_STATUSES = new Set(["PICKED", "SUBSTITUTED"]);
+
+const ITEM_BADGE_CLASS = {
+  PENDING: "badge-neutral",
+  PICKED: "badge-success",
+  SUBSTITUTED: "badge-success",
+  UNAVAILABLE: "badge-danger",
+  SKIPPED: "badge-neutral",
+};
+const ORDER_BADGE_CLASS = {
+  CREATED: "badge-warning",
+  ASSIGNED: "badge-warning",
+  PICKING: "badge-warning",
+  PARTIALLY_PICKED: "badge-warning",
+  EXCEPTION: "badge-danger",
+  READY: "badge-success",
+  COMPLETED: "badge-success",
+  CANCELLED: "badge-neutral",
+};
+
+const app = document.getElementById("app");
+
+// ---- top-level state --------------------------------------------------
+// Kept intentionally minimal, per the brief: the current order (the only
+// authoritative copy of backend state), a couple of page-level loading/error
+// flags, and one small per-item UI-state object for the report/accept/skip
+// flow. Nothing here is a second source of truth for order/item state.
+let currentOrder = null;
+let orderLoading = true;
+let orderError = null;
+
+let completing = false;
+let completeError = null; // { message, openItems }
+
+const itemState = {}; // item_id -> per-item UI state, lazily created
+
+function freshItemState() {
+  return {
+    recommendations: null,   // null = not fetched yet; [] = fetched, empty
+    loadingUnavailable: false,
+    unavailableError: null,
+    activeAccept: null,      // { productId, idempotencyKey } for the in-flight/last attempt
+    accepting: false,
+    acceptError: null,
+    conflictBanner: null,
+    unavailableProductIds: new Set(), // recs known (via a 409) to be gone
+  };
+}
+
+function getItemState(itemId) {
+  if (!itemState[itemId]) itemState[itemId] = freshItemState();
+  return itemState[itemId];
+}
+
+// ---- small formatting helpers ------------------------------------------
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[c]));
+}
+
+function formatStatus(status) {
+  return String(status)
+    .toLowerCase()
+    .split("_")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+function formatQty(qty) {
+  return Number.isInteger(qty) ? String(qty) : Number(qty).toFixed(2);
+}
+
+function formatScore(score) {
+  return `match ${Number(score).toFixed(2)}`;
+}
+
+function formatDate(iso) {
+  const d = new Date(iso);
+  return isNaN(d.getTime()) ? String(iso) : d.toLocaleString();
+}
+
+function badge(text, className) {
+  return `<span class="badge ${className}">${escapeHtml(text)}</span>`;
+}
+
+// ---- render ---------------------------------------------------------------
+// One function rebuilds the whole page from state on every change. The app
+// is small and has no continuous text input, so a full re-render per action
+// is simpler and less bug-prone than hand-patching the DOM, and a single
+// delegated click listener (bottom of file) means nothing needs re-binding.
+
+function render() {
+  const refreshBtn = document.getElementById("refresh-btn");
+  refreshBtn.disabled = orderLoading;
+  refreshBtn.textContent = orderLoading && currentOrder ? "Refreshing…" : "Refresh order";
+
+  const parts = [];
+
+  if (orderError) {
+    parts.push(`
+      <div class="banner banner-error">
+        <span>${escapeHtml(orderError)}</span>
+        <button class="btn btn-sm btn-error-outline" data-action="refresh-order">Retry</button>
+      </div>
+    `);
+  }
+
+  if (!currentOrder) {
+    parts.push(`<div class="empty-state">${orderLoading ? "Loading order…" : "No order loaded."}</div>`);
+  } else {
+    parts.push(renderOrder(currentOrder));
+  }
+
+  app.innerHTML = parts.join("");
+}
+
+function renderOrder(order) {
+  const showComplete = order.status !== "READY" && order.status !== "COMPLETED";
+  return `
+    <section class="panel">
+      <div class="order-summary-top">
+        <div>
+          <div class="order-id mono">${escapeHtml(order.id)}</div>
+          <div class="order-meta">Store ${escapeHtml(order.store_id)} &middot; Customer ${escapeHtml(order.customer_id)}</div>
+          <div class="order-meta">Pickup by ${escapeHtml(formatDate(order.pickup_deadline))}</div>
+        </div>
+        ${badge(formatStatus(order.status), ORDER_BADGE_CLASS[order.status] || "badge-neutral")}
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">Items</h2>
+      <div class="items-list">
+        ${order.items.map(renderItem).join("")}
+      </div>
+    </section>
+
+    ${order.status === "READY" ? `<div class="banner banner-success">Order is ready for pickup.</div>` : ""}
+    ${showComplete ? renderCompleteSection() : ""}
+  `;
+}
+
+function renderItem(item) {
+  const resolved = RESOLVED_STATUSES.has(item.status);
+  const st = getItemState(item.id);
+  return `
+    <div class="item-card">
+      <div class="item-row">
+        <div>
+          <div class="item-product">Product <span class="mono">${escapeHtml(item.product_id)}</span></div>
+          <div class="item-qty">Requested ${formatQty(item.requested_quantity)} &middot; Picked ${formatQty(item.picked_quantity)}</div>
+          ${item.substituted_product_id ? `<div class="item-sub-note">Substituted with <span class="mono">${escapeHtml(item.substituted_product_id)}</span></div>` : ""}
+        </div>
+        ${badge(formatStatus(item.status), ITEM_BADGE_CLASS[item.status] || "badge-neutral")}
+      </div>
+      ${resolved ? "" : renderItemAction(item, st)}
+    </div>
+  `;
+}
+
+function renderItemAction(item, st) {
+  if (st.recommendations === null) {
+    return `
+      <div class="item-actions">
+        <button class="btn btn-primary btn-sm" data-action="report-unavailable" data-item-id="${escapeHtml(item.id)}" ${st.loadingUnavailable ? "disabled" : ""}>
+          ${st.loadingUnavailable ? "Finding substitutes…" : "Report unavailable"}
+        </button>
+        ${st.unavailableError ? `
+          <div class="inline-error">
+            <span>${escapeHtml(st.unavailableError)}</span>
+            <button class="btn btn-sm btn-error-outline" data-action="report-unavailable" data-item-id="${escapeHtml(item.id)}">Retry</button>
+          </div>` : ""}
+      </div>
+    `;
+  }
+  return renderRecommendations(item, st);
+}
+
+function renderRecommendations(item, st) {
+  const recs = st.recommendations;
+  return `
+    <div class="recommendations">
+      ${st.conflictBanner ? `<div class="banner banner-warning" style="margin-bottom:10px;">${escapeHtml(st.conflictBanner)}</div>` : ""}
+      ${recs.length === 0 ? `
+        <div class="empty-recs">
+          <span>No substitutes available for this item.</span>
+          <button class="btn btn-secondary btn-sm" data-action="report-unavailable" data-item-id="${escapeHtml(item.id)}">Try again</button>
+        </div>
+      ` : `
+        <div class="rec-grid">
+          ${recs.map((r) => renderRecCard(item, r, st)).join("")}
+        </div>
+      `}
+      ${st.acceptError ? `
+        <div class="inline-error">
+          <span>${escapeHtml(st.acceptError)}</span>
+          <button class="btn btn-sm btn-error-outline" data-action="retry-accept" data-item-id="${escapeHtml(item.id)}">Retry</button>
+        </div>` : ""}
+    </div>
+  `;
+}
+
+function renderRecCard(item, rec, st) {
+  const isUnavailable = st.unavailableProductIds.has(rec.product_id);
+  const isThisAccepting = st.accepting && st.activeAccept && st.activeAccept.productId === rec.product_id;
+  const disabled = st.accepting || isUnavailable;
+  return `
+    <div class="rec-card ${isUnavailable ? "rec-card-unavailable" : ""}">
+      <div class="rec-card-top">
+        <span class="mono rec-product-id">${escapeHtml(rec.product_id)}</span>
+        <span class="score-chip" title="Recommendation signal, not a probability">${escapeHtml(formatScore(rec.score))}</span>
+      </div>
+      <div class="rec-reason">${escapeHtml(rec.reason)}</div>
+      ${isUnavailable ? `<div class="rec-unavailable-note">No longer available</div>` : `
+        <div class="rec-card-actions">
+          <button class="btn btn-primary btn-sm" data-action="accept" data-item-id="${escapeHtml(item.id)}" data-product-id="${escapeHtml(rec.product_id)}" ${disabled ? "disabled" : ""}>
+            ${isThisAccepting ? "Accepting…" : "Accept"}
+          </button>
+          <button class="btn btn-tertiary btn-sm" data-action="skip" data-item-id="${escapeHtml(item.id)}" data-product-id="${escapeHtml(rec.product_id)}" ${st.accepting ? "disabled" : ""}>
+            Skip
+          </button>
+        </div>
+      `}
+    </div>
+  `;
+}
+
+function renderCompleteSection() {
+  return `
+    <section class="panel complete-section">
+      <button class="btn btn-primary" data-action="complete-order" ${completing ? "disabled" : ""}>
+        ${completing ? "Completing…" : "Complete order"}
+      </button>
+      ${completeError ? renderCompleteError(completeError) : ""}
+    </section>
+  `;
+}
+
+function renderCompleteError(err) {
+  return `
+    <div class="inline-error complete-error">
+      <div>${escapeHtml(err.message)}</div>
+      ${err.openItems.length ? `
+        <ul class="open-items-list">
+          ${err.openItems.map((oi) => `<li>Item <span class="mono">${escapeHtml(oi.item_id)}</span> &mdash; ${escapeHtml(formatStatus(oi.status))}</li>`).join("")}
+        </ul>
+      ` : ""}
+      <button class="btn btn-sm btn-error-outline" data-action="complete-order">Retry</button>
+    </div>
+  `;
+}
+
+// ---- data / actions ---------------------------------------------------
+
+async function loadOrder() {
+  orderLoading = true;
+  orderError = null;
+  render();
+  try {
+    const res = await fetch(`/orders/${ORDER_ID}`);
+    if (!res.ok) {
+      orderError = currentOrder
+        ? "We couldn't refresh the latest order state."
+        : "We couldn't load this order.";
+      return;
+    }
+    currentOrder = await res.json();
+  } catch (err) {
+    orderError = currentOrder
+      ? "We couldn't refresh the latest order state."
+      : "We couldn't load this order.";
+  } finally {
+    orderLoading = false;
+    render();
+  }
+}
+
+async function reportUnavailable(itemId) {
+  const st = getItemState(itemId);
+  st.loadingUnavailable = true;
+  st.unavailableError = null;
+  st.recommendations = null;
+  st.conflictBanner = null;
+  render();
+
+  try {
+    const res = await fetch(`/orders/${ORDER_ID}/items/${itemId}/unavailable`, { method: "POST" });
+    if (!res.ok) {
+      st.unavailableError = "Couldn't find substitutes for this item. Please try again.";
+      return;
+    }
+    st.recommendations = await res.json();
+  } catch (err) {
+    st.unavailableError = "Couldn't reach the server. Please try again.";
+  } finally {
+    st.loadingUnavailable = false;
+    render();
+  }
+}
+
+function skipRecommendation(itemId, productId) {
+  const st = getItemState(itemId);
+  if (st.recommendations) {
+    st.recommendations = st.recommendations.filter((r) => r.product_id !== productId);
+  }
+  st.acceptError = null;
+  st.conflictBanner = null;
+  render();
+}
+
+async function acceptSubstitution(itemId, productId) {
+  const st = getItemState(itemId);
+
+  // Generate a fresh idempotency key only for a genuinely new logical
+  // acceptance (a different product, or no attempt in flight yet). A retry
+  // of the SAME attempt (see the "retry-accept" action) reuses the key
+  // already stored on st.activeAccept.
+  if (!st.activeAccept || st.activeAccept.productId !== productId) {
+    st.activeAccept = { productId, idempotencyKey: crypto.randomUUID() };
+  }
+  st.accepting = true;
+  st.acceptError = null;
+  st.conflictBanner = null;
+  render();
+
+  try {
+    const res = await fetch(`/orders/${ORDER_ID}/items/${itemId}/substitution`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        product_id: st.activeAccept.productId,
+        idempotency_key: st.activeAccept.idempotencyKey,
+      }),
+    });
+
+    if (res.status === 200) {
+      // Success -- the backend is authoritative, so drop all local
+      // recommendation/accept state for this item and re-fetch the order
+      // rather than hand-editing its status to PICKED here.
+      itemState[itemId] = freshItemState();
+      st.accepting = false;
+      await loadOrder();
+      return;
+    }
+
+    if (res.status === 409) {
+      let reason = "";
+      try {
+        const body = await res.json();
+        reason = body.reason || "";
+      } catch (e) {
+        /* no JSON body -- fall back to the generic message below */
+      }
+      st.unavailableProductIds.add(productId);
+      // A 409 is a terminal, already-cached result for this idempotency
+      // key (see the module comment above) -- clear it so a further
+      // explicit Accept click starts a genuinely new attempt.
+      st.activeAccept = null;
+      st.conflictBanner =
+        "This substitute is no longer available — someone else took the last unit. Refreshing the order...";
+      st.accepting = false;
+      render();
+      await loadOrder();
+      return;
+    }
+
+    st.acceptError = "Something went wrong accepting this substitution. Please try again.";
+  } catch (err) {
+    st.acceptError = "Couldn't reach the server. Please try again.";
+  } finally {
+    st.accepting = false;
+    render();
+  }
+}
+
+async function completeOrder() {
+  completing = true;
+  completeError = null;
+  render();
+
+  try {
+    const res = await fetch(`/orders/${ORDER_ID}/complete`, { method: "POST" });
+    if (res.status === 200) {
+      completing = false;
+      await loadOrder();
+      return;
+    }
+    if (res.status === 400) {
+      let body = {};
+      try {
+        body = await res.json();
+      } catch (e) {
+        /* no JSON body -- fall back to the generic message below */
+      }
+      completeError = {
+        message: body.reason || "Order cannot be completed yet.",
+        openItems: Array.isArray(body.open_items) ? body.open_items : [],
+      };
+      return;
+    }
+    completeError = { message: "Something went wrong completing this order. Please try again.", openItems: [] };
+  } catch (err) {
+    completeError = { message: "Couldn't reach the server. Please try again.", openItems: [] };
+  } finally {
+    completing = false;
+    render();
+  }
+}
+
+// ---- event delegation ---------------------------------------------------
+// A single listener on the page container, driven by data-action attributes,
+// since the whole page is rebuilt on every state change (no per-element
+// listeners to re-attach).
+
+app.addEventListener("click", (event) => {
+  const el = event.target.closest("[data-action]");
+  if (!el) return;
+
+  const { action, itemId, productId } = el.dataset;
+
+  if (action === "report-unavailable") reportUnavailable(itemId);
+  else if (action === "accept") acceptSubstitution(itemId, productId);
+  else if (action === "skip") skipRecommendation(itemId, productId);
+  else if (action === "retry-accept") {
+    const st = getItemState(itemId);
+    if (st.activeAccept) acceptSubstitution(itemId, st.activeAccept.productId);
+  } else if (action === "complete-order") completeOrder();
+});
+
+document.getElementById("refresh-btn").addEventListener("click", loadOrder);
+
+render();
+loadOrder();
+</script>
+</body>
+</html>
