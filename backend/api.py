@@ -33,6 +33,15 @@ exceptions are NOT caught here — those signal real bugs or data
 corruption (see candidates.py's own docstring on this) and should
 surface loudly.
 
+POST .../resolve-unavailable is a deliberately SEPARATE, short-circuit
+path for the case that pipeline can legitimately produce: zero
+candidates survived candidates.py's hard filters, so there is nothing
+for ai_ranking.py or ranking_validation.py to do. It skips straight to
+"associate confirms removal -> item transitions to UNAVAILABLE", never
+touching the AI layer or inventory. See that route's own docstring for
+why this is a distinct endpoint rather than a special case bolted onto
+POST .../unavailable.
+
 Session storage, auth, and persistence across restarts are all out of
 scope, matching db.py's own stated exclusions — this is a local,
 single-user prototype.
@@ -43,6 +52,7 @@ from __future__ import annotations
 import logging
 import os
 from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
@@ -106,6 +116,28 @@ class SubstitutionRequest(BaseModel):
 
     product_id: str
     idempotency_key: str
+
+
+class ResolveUnavailableRequest(BaseModel):
+    """Request body for POST .../resolve-unavailable.
+
+    `resolution` is a plain str, not a stricter Literal/enum: an
+    unsupported value is rejected below as an ordinary 400 business
+    error via _SUPPORTED_RESOLUTIONS, the same way SubstitutionRequest's
+    `product_id` is validated downstream rather than at the schema
+    layer — consistent error semantics (400, not FastAPI's generic 422
+    for a failed Pydantic literal) beats a marginally stricter type for
+    a single-value enum that has exactly one supported case today.
+    """
+
+    resolution: str
+
+
+# The only resolution this prototype supports (see module-level design
+# note on the new endpoint below). A set, not a single constant, so
+# adding a second resolution later is a one-line change here rather
+# than a restructure of the validation branch that checks it.
+_SUPPORTED_RESOLUTIONS = {"REMOVE"}
 
 
 # ----------------------------------------------------------------------
@@ -222,6 +254,112 @@ def report_item_unavailable(order_id: str, item_id: str) -> list[dict]:
     return ranking_validation.validate_recommendations(
         raw, candidate_list, original_dict
     )
+
+
+@app.post("/orders/{order_id}/items/{item_id}/resolve-unavailable")
+def resolve_unavailable_item(
+    order_id: str, item_id: str, body: ResolveUnavailableRequest
+) -> dict:
+    """An associate explicitly gives up on a line after
+    .../unavailable produced zero valid substitutes, removing it from
+    the picking flow so the order can still complete.
+
+    This is deliberately NOT a continuation of the candidate/ranking
+    pipeline above: it never calls candidates.py, ai_ranking.py, or
+    ranking_validation.py, and it never touches inventory. A zero-
+    candidate response from .../unavailable is already a valid,
+    terminal outcome of that pipeline (see candidates.py's own
+    docstring — a candidate either survives every hard filter or it's
+    gone); this endpoint is where the associate ACTS on that outcome
+    via one explicit, human-initiated request, not a retry of ranking
+    and not something the system infers on the associate's behalf.
+
+    `resolution` is checked against _SUPPORTED_RESOLUTIONS before
+    either db.py lookup runs, and REMOVE is the only value this
+    prototype defines: it transitions the item straight to
+    UNAVAILABLE via the same db.update_order_item_status() write path
+    every other item-status change already goes through -- no new
+    mutation primitive, no direct dict access.
+    """
+    if body.resolution not in _SUPPORTED_RESOLUTIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unsupported resolution {body.resolution!r}; supported "
+                f"values: {sorted(_SUPPORTED_RESOLUTIONS)}."
+            ),
+        )
+
+    order = db.get_order(order_id)
+    if order is None:
+        raise HTTPException(status_code=404, detail=f"Order {order_id!r} not found.")
+
+    item = db.get_order_item(order_id, item_id)
+    if item is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Order item {item_id!r} not found on order {order_id!r}.",
+        )
+
+    if item.status != OrderItemStatus.PENDING:
+        # Same convention as report_item_unavailable()'s identical check
+        # above: an item not currently PENDING is a state conflict
+        # (already resolved, or reported unavailable twice), not a
+        # malformed request -- 409, not 400, matching the existing
+        # substitution endpoint's use of 409 for "no longer valid to
+        # act on." This is what stops a second, redundant REMOVE from
+        # silently re-mutating an already-resolved item.
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                f"Order item {item_id!r} is not in a resolvable state "
+                f"(current status: {item.status.value})."
+            ),
+        )
+
+    updated = db.update_order_item_status(
+        order_id,
+        item_id,
+        status=OrderItemStatus.UNAVAILABLE,
+        exception_reason=(
+            "No valid substitution candidates were available; "
+            "associate removed the item."
+        ),
+    )
+    if not updated:
+        # We just confirmed this exact order/item exists moments ago --
+        # same "should be impossible" situation transactions.py raises
+        # loudly on after its own post-decrement update. Not folded
+        # into a polite conflict response; see that module's docstring
+        # for why an invariant violation here is a bug to investigate,
+        # not a business outcome to paper over.
+        raise RuntimeError(
+            "update_order_item_status failed unexpectedly for "
+            f"order_id={order_id!r}, item_id={item_id!r} immediately "
+            "after a successful get_order_item -- this should be impossible."
+        )
+
+    db.append_audit_event(
+        {
+            "event_type": "item_marked_unavailable",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "order_id": order_id,
+            "item_id": item_id,
+            # Same explicit placeholder as transactions.py's audit
+            # events -- no authenticated associate identity exists
+            # anywhere in this prototype yet.
+            "associate_id": "prototype",
+            "resolution": body.resolution,
+            "original_product_id": item.product_id,
+            "reason": "No acceptable substitution was available for this item.",
+        }
+    )
+
+    return {
+        "status": "ok",
+        "item_id": item_id,
+        "item_status": OrderItemStatus.UNAVAILABLE.value,
+    }
 
 
 @app.post("/orders/{order_id}/items/{item_id}/substitution")

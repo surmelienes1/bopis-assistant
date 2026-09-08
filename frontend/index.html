@@ -269,10 +269,22 @@
  *     key -- a further explicit Accept click is a new logical attempt and
  *     earns a fresh key, rather than replaying the same cached conflict
  *     forever.
+ *
+ *  3. A zero-length recommendations array is a valid, terminal answer from
+ *     candidate retrieval (see candidates.py's hard filters) -- re-running
+ *     it can't produce a different result, so this UI does not offer "Try
+ *     again" for that case. It offers "Remove item" instead, which is a
+ *     distinct, explicit associate action (POST .../resolve-unavailable)
+ *     that this file never triggers automatically just because a
+ *     recommendations list came back empty.
  */
 
 const ORDER_ID = "ORD-1001";
-const RESOLVED_STATUSES = new Set(["PICKED", "SUBSTITUTED"]);
+// UNAVAILABLE counts as resolved here too, mirroring models.py's
+// RESOLVED_ITEM_STATUSES: once an associate explicitly removes a line
+// (POST .../resolve-unavailable), it's done -- no action panel, and it
+// no longer blocks order completion.
+const RESOLVED_STATUSES = new Set(["PICKED", "SUBSTITUTED", "UNAVAILABLE"]);
 
 const ITEM_BADGE_CLASS = {
   PENDING: "badge-neutral",
@@ -318,6 +330,8 @@ function freshItemState() {
     acceptError: null,
     conflictBanner: null,
     unavailableProductIds: new Set(), // recs known (via a 409) to be gone
+    resolving: false,   // in-flight POST .../resolve-unavailable
+    resolveError: null,
   };
 }
 
@@ -426,6 +440,7 @@ function renderItem(item) {
           <div class="item-product">Product <span class="mono">${escapeHtml(item.product_id)}</span></div>
           <div class="item-qty">Requested ${formatQty(item.requested_quantity)} &middot; Picked ${formatQty(item.picked_quantity)}</div>
           ${item.substituted_product_id ? `<div class="item-sub-note">Substituted with <span class="mono">${escapeHtml(item.substituted_product_id)}</span></div>` : ""}
+          ${item.status === "UNAVAILABLE" && item.exception_reason ? `<div class="item-sub-note">${escapeHtml(item.exception_reason)}</div>` : ""}
         </div>
         ${badge(formatStatus(item.status), ITEM_BADGE_CLASS[item.status] || "badge-neutral")}
       </div>
@@ -457,22 +472,39 @@ function renderRecommendations(item, st) {
   return `
     <div class="recommendations">
       ${st.conflictBanner ? `<div class="banner banner-warning" style="margin-bottom:10px;">${escapeHtml(st.conflictBanner)}</div>` : ""}
-      ${recs.length === 0 ? `
-        <div class="empty-recs">
-          <span>No substitutes available for this item.</span>
-          <button class="btn btn-secondary btn-sm" data-action="report-unavailable" data-item-id="${escapeHtml(item.id)}">Try again</button>
-        </div>
-      ` : `
+      ${recs.length === 0 ? renderNoSubstitutes(item, st) : `
         <div class="rec-grid">
           ${recs.map((r) => renderRecCard(item, r, st)).join("")}
         </div>
       `}
-      ${st.acceptError ? `
+      ${recs.length > 0 && st.acceptError ? `
         <div class="inline-error">
           <span>${escapeHtml(st.acceptError)}</span>
           <button class="btn btn-sm btn-error-outline" data-action="retry-accept" data-item-id="${escapeHtml(item.id)}">Retry</button>
         </div>` : ""}
     </div>
+  `;
+}
+
+function renderNoSubstitutes(item, st) {
+  // Deterministic candidate retrieval already ran (that's how we got
+  // an empty, not null, recommendations list) and re-running it can't
+  // produce a different result -- see candidates.py's hard filters.
+  // So the only forward action is the associate explicitly removing
+  // the line, never an automatic "no recs -> mark unavailable" on
+  // their behalf.
+  return `
+    <div class="empty-recs">
+      <span>No suitable substitute is available for this item.</span>
+      <button class="btn btn-error-outline btn-sm" data-action="resolve-unavailable" data-item-id="${escapeHtml(item.id)}" ${st.resolving ? "disabled" : ""}>
+        ${st.resolving ? "Removing…" : "Remove item"}
+      </button>
+    </div>
+    ${st.resolveError ? `
+      <div class="inline-error">
+        <span>${escapeHtml(st.resolveError)}</span>
+        <button class="btn btn-sm btn-error-outline" data-action="resolve-unavailable" data-item-id="${escapeHtml(item.id)}">Retry</button>
+      </div>` : ""}
   `;
 }
 
@@ -649,6 +681,59 @@ async function acceptSubstitution(itemId, productId) {
   }
 }
 
+async function resolveUnavailable(itemId) {
+  const st = getItemState(itemId);
+  st.resolving = true;
+  st.resolveError = null;
+  st.conflictBanner = null;
+  render();
+
+  try {
+    const res = await fetch(`/orders/${ORDER_ID}/items/${itemId}/resolve-unavailable`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ resolution: "REMOVE" }),
+    });
+
+    if (res.status === 200) {
+      // Backend is authoritative -- drop local recommendation state for
+      // this item and re-fetch the order rather than hand-editing its
+      // status to UNAVAILABLE here (same pattern as acceptSubstitution).
+      itemState[itemId] = freshItemState();
+      st.resolving = false;
+      await loadOrder();
+      return;
+    }
+
+    if (res.status === 409) {
+      // Someone/something already resolved this item (e.g. a second
+      // "Remove item" click, or a substitution accepted in another
+      // tab). Not a bug -- refresh so the UI reflects whatever it
+      // actually is now.
+      let detail = "";
+      try {
+        const body = await res.json();
+        detail = body.detail || "";
+      } catch (e) {
+        /* no JSON body -- fall back to the generic message below */
+      }
+      st.conflictBanner =
+        detail || "This item was already resolved. Refreshing the order...";
+      st.resolving = false;
+      render();
+      await loadOrder();
+      return;
+    }
+
+    st.resolveError = "Something went wrong removing this item. Please try again.";
+  } catch (err) {
+    st.resolveError = "Couldn't reach the server. Please try again.";
+  } finally {
+    st.resolving = false;
+    render();
+  }
+}
+
 async function completeOrder() {
   completing = true;
   completeError = null;
@@ -697,6 +782,7 @@ app.addEventListener("click", (event) => {
   if (action === "report-unavailable") reportUnavailable(itemId);
   else if (action === "accept") acceptSubstitution(itemId, productId);
   else if (action === "skip") skipRecommendation(itemId, productId);
+  else if (action === "resolve-unavailable") resolveUnavailable(itemId);
   else if (action === "retry-accept") {
     const st = getItemState(itemId);
     if (st.activeAccept) acceptSubstitution(itemId, st.activeAccept.productId);

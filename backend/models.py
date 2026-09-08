@@ -62,7 +62,16 @@ class OrderItemStatus(str, Enum):
     SKIPPED = "SKIPPED"
 
 
-RESOLVED_ITEM_STATUSES = frozenset({OrderItemStatus.PICKED, OrderItemStatus.SUBSTITUTED})
+# UNAVAILABLE counts as resolved alongside PICKED/SUBSTITUTED: it's the
+# terminal state for a line the associate explicitly gave up on after
+# candidate retrieval produced zero valid substitutes (see api.py's
+# POST .../resolve-unavailable) -- a deliberate, recorded business
+# decision, not an unresolved gap the order should stay blocked on.
+# PENDING and SKIPPED are unchanged: PENDING is still "not yet acted
+# on," and nothing in this prompt's scope gives SKIPPED a meaning.
+RESOLVED_ITEM_STATUSES = frozenset(
+    {OrderItemStatus.PICKED, OrderItemStatus.SUBSTITUTED, OrderItemStatus.UNAVAILABLE}
+)
 
 
 # ----------------------------------------------------------------------
