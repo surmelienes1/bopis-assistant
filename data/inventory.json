@@ -1,58 +1,2114 @@
 [
-    {"product_id": "SKU-COKE-ZERO-150",   "store_id": "STORE-1", "quantity": 0,  "reserved_quantity": 0, "version": 4, "updated_at": "2026-09-08T19:42:00+02:00"},
-    {"product_id": "SKU-COKE-ZERO-100",   "store_id": "STORE-1", "quantity": 9,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-COKE-ZERO-6X330", "store_id": "STORE-1", "quantity": 5,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-COKE-ORIG-150",   "store_id": "STORE-1", "quantity": 11, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-PEPSI-MAX-150",   "store_id": "STORE-1", "quantity": 7,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-SPRITE-150",      "store_id": "STORE-1", "quantity": 6,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-MILK-WHOLE-1L",   "store_id": "STORE-1", "quantity": 20, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-MILK-SKIM-1L",    "store_id": "STORE-1", "quantity": 14, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-YOGURT-NAT-500",  "store_id": "STORE-1", "quantity": 10, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-BANANA-1KG",      "store_id": "STORE-1", "quantity": 25, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-APPLE-1KG",       "store_id": "STORE-1", "quantity": 18, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-TOMATO-1KG",      "store_id": "STORE-1", "quantity": 16, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-PASTA-SPAG-500",  "store_id": "STORE-1", "quantity": 30, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-PASTA-PENNE-500", "store_id": "STORE-1", "quantity": 22, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-PASTA-FUSILLI-500","store_id": "STORE-1", "quantity": 15, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-RICE-BASMATI-1KG","store_id": "STORE-1", "quantity": 12, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-CHOC-DARK-100",   "store_id": "STORE-1", "quantity": 24, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-CHIPS-SALT-150",  "store_id": "STORE-1", "quantity": 19, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-  
-    {"product_id": "SKU-COKE-ZERO-150",   "store_id": "STORE-2", "quantity": 14, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-COKE-ZERO-100",   "store_id": "STORE-2", "quantity": 10, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-COKE-ZERO-6X330", "store_id": "STORE-2", "quantity": 8,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-COKE-ORIG-150",   "store_id": "STORE-2", "quantity": 13, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-PEPSI-MAX-150",   "store_id": "STORE-2", "quantity": 9,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-SPRITE-150",      "store_id": "STORE-2", "quantity": 7,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-MILK-WHOLE-1L",   "store_id": "STORE-2", "quantity": 17, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-MILK-SKIM-1L",    "store_id": "STORE-2", "quantity": 12, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-YOGURT-NAT-500",  "store_id": "STORE-2", "quantity": 8,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-BANANA-1KG",      "store_id": "STORE-2", "quantity": 20, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-APPLE-1KG",       "store_id": "STORE-2", "quantity": 15, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-TOMATO-1KG",      "store_id": "STORE-2", "quantity": 13, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-PASTA-SPAG-500",  "store_id": "STORE-2", "quantity": 25, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-PASTA-PENNE-500", "store_id": "STORE-2", "quantity": 18, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-PASTA-FUSILLI-500","store_id": "STORE-2", "quantity": 11, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-RICE-BASMATI-1KG","store_id": "STORE-2", "quantity": 9,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-CHOC-DARK-100",   "store_id": "STORE-2", "quantity": 20, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-CHIPS-SALT-150",  "store_id": "STORE-2", "quantity": 16, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-
-    {"product_id": "SKU-COKE-ZERO-150",   "store_id": "STORE-3", "quantity": 9,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-COKE-ZERO-100",   "store_id": "STORE-3", "quantity": 4,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-COKE-ZERO-6X330", "store_id": "STORE-3", "quantity": 0,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-COKE-ORIG-150",   "store_id": "STORE-3", "quantity": 6,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-PEPSI-MAX-150",   "store_id": "STORE-3", "quantity": 5,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-SPRITE-150",      "store_id": "STORE-3", "quantity": 3,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-MILK-WHOLE-1L",   "store_id": "STORE-3", "quantity": 10, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-MILK-SKIM-1L",    "store_id": "STORE-3", "quantity": 6,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-YOGURT-NAT-500",  "store_id": "STORE-3", "quantity": 0,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-BANANA-1KG",      "store_id": "STORE-3", "quantity": 12, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-APPLE-1KG",       "store_id": "STORE-3", "quantity": 9,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-TOMATO-1KG",      "store_id": "STORE-3", "quantity": 7,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-PASTA-SPAG-500",  "store_id": "STORE-3", "quantity": 14, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-PASTA-PENNE-500", "store_id": "STORE-3", "quantity": 10, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-PASTA-FUSILLI-500","store_id": "STORE-3", "quantity": 6,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-RICE-BASMATI-1KG","store_id": "STORE-3", "quantity": 5,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-CHOC-DARK-100",   "store_id": "STORE-3", "quantity": 11, "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"},
-    {"product_id": "SKU-CHIPS-SALT-150",  "store_id": "STORE-3", "quantity": 8,  "reserved_quantity": 0, "version": 1, "updated_at": "2026-09-08T18:00:00+02:00"}
+    {
+      "product_id": "SKU-COKE-ZERO-150",
+      "store_id": "STORE-1",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 4,
+      "updated_at": "2026-09-08T19:42:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-100",
+      "store_id": "STORE-1",
+      "quantity": 9,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-6X330",
+      "store_id": "STORE-1",
+      "quantity": 5,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ORIG-150",
+      "store_id": "STORE-1",
+      "quantity": 11,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PEPSI-MAX-150",
+      "store_id": "STORE-1",
+      "quantity": 7,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-SPRITE-150",
+      "store_id": "STORE-1",
+      "quantity": 6,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-MILK-WHOLE-1L",
+      "store_id": "STORE-1",
+      "quantity": 20,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-MILK-SKIM-1L",
+      "store_id": "STORE-1",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-YOGURT-NAT-500",
+      "store_id": "STORE-1",
+      "quantity": 10,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BANANA-1KG",
+      "store_id": "STORE-1",
+      "quantity": 25,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-APPLE-1KG",
+      "store_id": "STORE-1",
+      "quantity": 18,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-TOMATO-1KG",
+      "store_id": "STORE-1",
+      "quantity": 16,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-SPAG-500",
+      "store_id": "STORE-1",
+      "quantity": 30,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-PENNE-500",
+      "store_id": "STORE-1",
+      "quantity": 22,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-FUSILLI-500",
+      "store_id": "STORE-1",
+      "quantity": 15,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-RICE-BASMATI-1KG",
+      "store_id": "STORE-1",
+      "quantity": 12,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHOC-DARK-100",
+      "store_id": "STORE-1",
+      "quantity": 24,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHIPS-SALT-150",
+      "store_id": "STORE-1",
+      "quantity": 19,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-150",
+      "store_id": "STORE-2",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-100",
+      "store_id": "STORE-2",
+      "quantity": 10,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-6X330",
+      "store_id": "STORE-2",
+      "quantity": 8,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ORIG-150",
+      "store_id": "STORE-2",
+      "quantity": 13,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PEPSI-MAX-150",
+      "store_id": "STORE-2",
+      "quantity": 9,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-SPRITE-150",
+      "store_id": "STORE-2",
+      "quantity": 7,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-MILK-WHOLE-1L",
+      "store_id": "STORE-2",
+      "quantity": 17,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-MILK-SKIM-1L",
+      "store_id": "STORE-2",
+      "quantity": 12,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-YOGURT-NAT-500",
+      "store_id": "STORE-2",
+      "quantity": 8,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BANANA-1KG",
+      "store_id": "STORE-2",
+      "quantity": 20,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-APPLE-1KG",
+      "store_id": "STORE-2",
+      "quantity": 15,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-TOMATO-1KG",
+      "store_id": "STORE-2",
+      "quantity": 13,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-SPAG-500",
+      "store_id": "STORE-2",
+      "quantity": 25,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-PENNE-500",
+      "store_id": "STORE-2",
+      "quantity": 18,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-FUSILLI-500",
+      "store_id": "STORE-2",
+      "quantity": 11,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-RICE-BASMATI-1KG",
+      "store_id": "STORE-2",
+      "quantity": 9,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHOC-DARK-100",
+      "store_id": "STORE-2",
+      "quantity": 20,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHIPS-SALT-150",
+      "store_id": "STORE-2",
+      "quantity": 16,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-150",
+      "store_id": "STORE-3",
+      "quantity": 9,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-100",
+      "store_id": "STORE-3",
+      "quantity": 4,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-6X330",
+      "store_id": "STORE-3",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ORIG-150",
+      "store_id": "STORE-3",
+      "quantity": 6,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PEPSI-MAX-150",
+      "store_id": "STORE-3",
+      "quantity": 5,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-SPRITE-150",
+      "store_id": "STORE-3",
+      "quantity": 3,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-MILK-WHOLE-1L",
+      "store_id": "STORE-3",
+      "quantity": 10,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-MILK-SKIM-1L",
+      "store_id": "STORE-3",
+      "quantity": 6,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-YOGURT-NAT-500",
+      "store_id": "STORE-3",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BANANA-1KG",
+      "store_id": "STORE-3",
+      "quantity": 12,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-APPLE-1KG",
+      "store_id": "STORE-3",
+      "quantity": 9,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-TOMATO-1KG",
+      "store_id": "STORE-3",
+      "quantity": 7,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-SPAG-500",
+      "store_id": "STORE-3",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-PENNE-500",
+      "store_id": "STORE-3",
+      "quantity": 10,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-FUSILLI-500",
+      "store_id": "STORE-3",
+      "quantity": 6,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-RICE-BASMATI-1KG",
+      "store_id": "STORE-3",
+      "quantity": 5,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHOC-DARK-100",
+      "store_id": "STORE-3",
+      "quantity": 11,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHIPS-SALT-150",
+      "store_id": "STORE-3",
+      "quantity": 8,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-FANTA-ORANGE-150",
+      "store_id": "STORE-1",
+      "quantity": 28,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-FANTA-ORANGE-150",
+      "store_id": "STORE-2",
+      "quantity": 13,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-FANTA-ORANGE-150",
+      "store_id": "STORE-3",
+      "quantity": 20,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-FANTA-ORANGE-150",
+      "store_id": "STORE-4",
+      "quantity": 23,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-7UP-150",
+      "store_id": "STORE-1",
+      "quantity": 16,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-7UP-150",
+      "store_id": "STORE-2",
+      "quantity": 24,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-7UP-150",
+      "store_id": "STORE-3",
+      "quantity": 27,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-7UP-150",
+      "store_id": "STORE-4",
+      "quantity": 9,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PEPSI-REG-150",
+      "store_id": "STORE-1",
+      "quantity": 18,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PEPSI-REG-150",
+      "store_id": "STORE-2",
+      "quantity": 16,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PEPSI-REG-150",
+      "store_id": "STORE-3",
+      "quantity": 28,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PEPSI-REG-150",
+      "store_id": "STORE-4",
+      "quantity": 13,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-2L",
+      "store_id": "STORE-1",
+      "quantity": 3,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-2L",
+      "store_id": "STORE-2",
+      "quantity": 16,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-2L",
+      "store_id": "STORE-3",
+      "quantity": 7,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-2L",
+      "store_id": "STORE-4",
+      "quantity": 20,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-MILK-OAT-1L",
+      "store_id": "STORE-1",
+      "quantity": 11,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-MILK-OAT-1L",
+      "store_id": "STORE-2",
+      "quantity": 18,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-MILK-OAT-1L",
+      "store_id": "STORE-3",
+      "quantity": 15,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-MILK-OAT-1L",
+      "store_id": "STORE-4",
+      "quantity": 9,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BUTTER-250",
+      "store_id": "STORE-1",
+      "quantity": 3,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BUTTER-250",
+      "store_id": "STORE-2",
+      "quantity": 11,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BUTTER-250",
+      "store_id": "STORE-3",
+      "quantity": 24,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BUTTER-250",
+      "store_id": "STORE-4",
+      "quantity": 12,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHEESE-GOUDA-200",
+      "store_id": "STORE-1",
+      "quantity": 11,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHEESE-GOUDA-200",
+      "store_id": "STORE-2",
+      "quantity": 28,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHEESE-GOUDA-200",
+      "store_id": "STORE-3",
+      "quantity": 23,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHEESE-GOUDA-200",
+      "store_id": "STORE-4",
+      "quantity": 23,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ORANGE-1KG",
+      "store_id": "STORE-1",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ORANGE-1KG",
+      "store_id": "STORE-2",
+      "quantity": 26,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ORANGE-1KG",
+      "store_id": "STORE-3",
+      "quantity": 28,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ORANGE-1KG",
+      "store_id": "STORE-4",
+      "quantity": 13,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-GRAPES-500G",
+      "store_id": "STORE-1",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-GRAPES-500G",
+      "store_id": "STORE-2",
+      "quantity": 9,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-GRAPES-500G",
+      "store_id": "STORE-3",
+      "quantity": 24,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-GRAPES-500G",
+      "store_id": "STORE-4",
+      "quantity": 9,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-AVOCADO-4PACK",
+      "store_id": "STORE-1",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-AVOCADO-4PACK",
+      "store_id": "STORE-2",
+      "quantity": 12,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-AVOCADO-4PACK",
+      "store_id": "STORE-3",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-AVOCADO-4PACK",
+      "store_id": "STORE-4",
+      "quantity": 26,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ONION-1KG",
+      "store_id": "STORE-1",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ONION-1KG",
+      "store_id": "STORE-2",
+      "quantity": 28,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ONION-1KG",
+      "store_id": "STORE-3",
+      "quantity": 13,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ONION-1KG",
+      "store_id": "STORE-4",
+      "quantity": 6,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-LASAGNE-500",
+      "store_id": "STORE-1",
+      "quantity": 16,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-LASAGNE-500",
+      "store_id": "STORE-2",
+      "quantity": 13,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-LASAGNE-500",
+      "store_id": "STORE-3",
+      "quantity": 22,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-LASAGNE-500",
+      "store_id": "STORE-4",
+      "quantity": 22,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-GF-PENNE-500",
+      "store_id": "STORE-1",
+      "quantity": 24,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-GF-PENNE-500",
+      "store_id": "STORE-2",
+      "quantity": 8,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-GF-PENNE-500",
+      "store_id": "STORE-3",
+      "quantity": 16,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-GF-PENNE-500",
+      "store_id": "STORE-4",
+      "quantity": 26,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-RICE-JASMINE-1KG",
+      "store_id": "STORE-1",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-RICE-JASMINE-1KG",
+      "store_id": "STORE-2",
+      "quantity": 18,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-RICE-JASMINE-1KG",
+      "store_id": "STORE-3",
+      "quantity": 11,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-RICE-JASMINE-1KG",
+      "store_id": "STORE-4",
+      "quantity": 17,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-RICE-BROWN-1KG",
+      "store_id": "STORE-1",
+      "quantity": 4,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-RICE-BROWN-1KG",
+      "store_id": "STORE-2",
+      "quantity": 20,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-RICE-BROWN-1KG",
+      "store_id": "STORE-3",
+      "quantity": 19,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-RICE-BROWN-1KG",
+      "store_id": "STORE-4",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHOC-MILK-100",
+      "store_id": "STORE-1",
+      "quantity": 27,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHOC-MILK-100",
+      "store_id": "STORE-2",
+      "quantity": 12,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHOC-MILK-100",
+      "store_id": "STORE-3",
+      "quantity": 10,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHOC-MILK-100",
+      "store_id": "STORE-4",
+      "quantity": 19,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHOC-HAZELNUT-100",
+      "store_id": "STORE-1",
+      "quantity": 23,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHOC-HAZELNUT-100",
+      "store_id": "STORE-2",
+      "quantity": 10,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHOC-HAZELNUT-100",
+      "store_id": "STORE-3",
+      "quantity": 28,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHOC-HAZELNUT-100",
+      "store_id": "STORE-4",
+      "quantity": 8,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHIPS-PAPRIKA-150",
+      "store_id": "STORE-1",
+      "quantity": 15,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHIPS-PAPRIKA-150",
+      "store_id": "STORE-2",
+      "quantity": 15,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHIPS-PAPRIKA-150",
+      "store_id": "STORE-3",
+      "quantity": 24,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHIPS-PAPRIKA-150",
+      "store_id": "STORE-4",
+      "quantity": 20,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PRETZELS-200",
+      "store_id": "STORE-1",
+      "quantity": 10,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PRETZELS-200",
+      "store_id": "STORE-2",
+      "quantity": 27,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PRETZELS-200",
+      "store_id": "STORE-3",
+      "quantity": 19,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PRETZELS-200",
+      "store_id": "STORE-4",
+      "quantity": 16,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BREAD-WHITE-500",
+      "store_id": "STORE-1",
+      "quantity": 6,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BREAD-WHITE-500",
+      "store_id": "STORE-2",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BREAD-WHITE-500",
+      "store_id": "STORE-3",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BREAD-WHITE-500",
+      "store_id": "STORE-4",
+      "quantity": 26,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BREAD-WHOLEWHEAT-500",
+      "store_id": "STORE-1",
+      "quantity": 22,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BREAD-WHOLEWHEAT-500",
+      "store_id": "STORE-2",
+      "quantity": 4,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BREAD-WHOLEWHEAT-500",
+      "store_id": "STORE-3",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BREAD-WHOLEWHEAT-500",
+      "store_id": "STORE-4",
+      "quantity": 21,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BAGEL-6PACK",
+      "store_id": "STORE-1",
+      "quantity": 26,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BAGEL-6PACK",
+      "store_id": "STORE-2",
+      "quantity": 21,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BAGEL-6PACK",
+      "store_id": "STORE-3",
+      "quantity": 12,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BAGEL-6PACK",
+      "store_id": "STORE-4",
+      "quantity": 27,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PIZZA-MARGH-400",
+      "store_id": "STORE-1",
+      "quantity": 23,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PIZZA-MARGH-400",
+      "store_id": "STORE-2",
+      "quantity": 22,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PIZZA-MARGH-400",
+      "store_id": "STORE-3",
+      "quantity": 9,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PIZZA-MARGH-400",
+      "store_id": "STORE-4",
+      "quantity": 25,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ICECREAM-VANILLA-500",
+      "store_id": "STORE-1",
+      "quantity": 6,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ICECREAM-VANILLA-500",
+      "store_id": "STORE-2",
+      "quantity": 9,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ICECREAM-VANILLA-500",
+      "store_id": "STORE-3",
+      "quantity": 4,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ICECREAM-VANILLA-500",
+      "store_id": "STORE-4",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ICECREAM-CHOC-500",
+      "store_id": "STORE-1",
+      "quantity": 24,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ICECREAM-CHOC-500",
+      "store_id": "STORE-2",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ICECREAM-CHOC-500",
+      "store_id": "STORE-3",
+      "quantity": 23,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-ICECREAM-CHOC-500",
+      "store_id": "STORE-4",
+      "quantity": 7,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CANNED-TOMATO-400",
+      "store_id": "STORE-1",
+      "quantity": 24,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CANNED-TOMATO-400",
+      "store_id": "STORE-2",
+      "quantity": 6,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CANNED-TOMATO-400",
+      "store_id": "STORE-3",
+      "quantity": 19,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CANNED-TOMATO-400",
+      "store_id": "STORE-4",
+      "quantity": 22,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CANNED-BEANS-400",
+      "store_id": "STORE-1",
+      "quantity": 16,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CANNED-BEANS-400",
+      "store_id": "STORE-2",
+      "quantity": 3,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CANNED-BEANS-400",
+      "store_id": "STORE-3",
+      "quantity": 6,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CANNED-BEANS-400",
+      "store_id": "STORE-4",
+      "quantity": 28,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CANNED-CORN-400",
+      "store_id": "STORE-1",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CANNED-CORN-400",
+      "store_id": "STORE-2",
+      "quantity": 17,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CANNED-CORN-400",
+      "store_id": "STORE-3",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CANNED-CORN-400",
+      "store_id": "STORE-4",
+      "quantity": 5,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CEREAL-CORNFLAKES-500",
+      "store_id": "STORE-1",
+      "quantity": 7,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CEREAL-CORNFLAKES-500",
+      "store_id": "STORE-2",
+      "quantity": 16,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CEREAL-CORNFLAKES-500",
+      "store_id": "STORE-3",
+      "quantity": 21,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CEREAL-CORNFLAKES-500",
+      "store_id": "STORE-4",
+      "quantity": 18,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CEREAL-MUESLI-500",
+      "store_id": "STORE-1",
+      "quantity": 6,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CEREAL-MUESLI-500",
+      "store_id": "STORE-2",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CEREAL-MUESLI-500",
+      "store_id": "STORE-3",
+      "quantity": 28,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CEREAL-MUESLI-500",
+      "store_id": "STORE-4",
+      "quantity": 21,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-OATS-ROLLED-500",
+      "store_id": "STORE-1",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-OATS-ROLLED-500",
+      "store_id": "STORE-2",
+      "quantity": 18,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-OATS-ROLLED-500",
+      "store_id": "STORE-3",
+      "quantity": 28,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-OATS-ROLLED-500",
+      "store_id": "STORE-4",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COFFEE-GROUND-250",
+      "store_id": "STORE-1",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COFFEE-GROUND-250",
+      "store_id": "STORE-2",
+      "quantity": 23,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COFFEE-GROUND-250",
+      "store_id": "STORE-3",
+      "quantity": 18,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COFFEE-GROUND-250",
+      "store_id": "STORE-4",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-TEA-BLACK-50BAGS",
+      "store_id": "STORE-1",
+      "quantity": 23,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-TEA-BLACK-50BAGS",
+      "store_id": "STORE-2",
+      "quantity": 28,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-TEA-BLACK-50BAGS",
+      "store_id": "STORE-3",
+      "quantity": 5,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-TEA-BLACK-50BAGS",
+      "store_id": "STORE-4",
+      "quantity": 11,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-OJ-1L",
+      "store_id": "STORE-1",
+      "quantity": 10,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-OJ-1L",
+      "store_id": "STORE-2",
+      "quantity": 24,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-OJ-1L",
+      "store_id": "STORE-3",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-OJ-1L",
+      "store_id": "STORE-4",
+      "quantity": 6,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-APPLEJUICE-1L",
+      "store_id": "STORE-1",
+      "quantity": 22,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-APPLEJUICE-1L",
+      "store_id": "STORE-2",
+      "quantity": 16,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-APPLEJUICE-1L",
+      "store_id": "STORE-3",
+      "quantity": 15,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-APPLEJUICE-1L",
+      "store_id": "STORE-4",
+      "quantity": 10,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PAPERTOWEL-2ROLL",
+      "store_id": "STORE-1",
+      "quantity": 9,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PAPERTOWEL-2ROLL",
+      "store_id": "STORE-2",
+      "quantity": 6,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PAPERTOWEL-2ROLL",
+      "store_id": "STORE-3",
+      "quantity": 24,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PAPERTOWEL-2ROLL",
+      "store_id": "STORE-4",
+      "quantity": 22,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-TOILETPAPER-4ROLL",
+      "store_id": "STORE-1",
+      "quantity": 12,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-TOILETPAPER-4ROLL",
+      "store_id": "STORE-2",
+      "quantity": 23,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-TOILETPAPER-4ROLL",
+      "store_id": "STORE-3",
+      "quantity": 24,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-TOILETPAPER-4ROLL",
+      "store_id": "STORE-4",
+      "quantity": 11,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-DISHSOAP-500ML",
+      "store_id": "STORE-1",
+      "quantity": 9,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-DISHSOAP-500ML",
+      "store_id": "STORE-2",
+      "quantity": 6,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-DISHSOAP-500ML",
+      "store_id": "STORE-3",
+      "quantity": 17,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-DISHSOAP-500ML",
+      "store_id": "STORE-4",
+      "quantity": 4,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-HANDSOAP-300ML",
+      "store_id": "STORE-1",
+      "quantity": 26,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-HANDSOAP-300ML",
+      "store_id": "STORE-2",
+      "quantity": 5,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-HANDSOAP-300ML",
+      "store_id": "STORE-3",
+      "quantity": 22,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-HANDSOAP-300ML",
+      "store_id": "STORE-4",
+      "quantity": 5,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-LAUNDRY-DETERGENT-1L",
+      "store_id": "STORE-1",
+      "quantity": 15,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-LAUNDRY-DETERGENT-1L",
+      "store_id": "STORE-2",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-LAUNDRY-DETERGENT-1L",
+      "store_id": "STORE-3",
+      "quantity": 17,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-LAUNDRY-DETERGENT-1L",
+      "store_id": "STORE-4",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-HONEY-NATURAL-350",
+      "store_id": "STORE-1",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-HONEY-NATURAL-350",
+      "store_id": "STORE-2",
+      "quantity": 21,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-HONEY-NATURAL-350",
+      "store_id": "STORE-3",
+      "quantity": 11,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-HONEY-NATURAL-350",
+      "store_id": "STORE-4",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHIPS-SALT-150",
+      "store_id": "STORE-4",
+      "quantity": 5,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ORIG-150",
+      "store_id": "STORE-4",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHOC-DARK-100",
+      "store_id": "STORE-4",
+      "quantity": 17,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BANANA-1KG",
+      "store_id": "STORE-4",
+      "quantity": 17,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-YOGURT-NAT-500",
+      "store_id": "STORE-4",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-150",
+      "store_id": "STORE-4",
+      "quantity": 15,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-SPRITE-150",
+      "store_id": "STORE-4",
+      "quantity": 21,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-APPLE-1KG",
+      "store_id": "STORE-4",
+      "quantity": 4,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-FUSILLI-500",
+      "store_id": "STORE-4",
+      "quantity": 19,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-RICE-BASMATI-1KG",
+      "store_id": "STORE-4",
+      "quantity": 5,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PEPSI-MAX-150",
+      "store_id": "STORE-4",
+      "quantity": 6,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-MILK-WHOLE-1L",
+      "store_id": "STORE-4",
+      "quantity": 17,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-6X330",
+      "store_id": "STORE-4",
+      "quantity": 8,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-100",
+      "store_id": "STORE-4",
+      "quantity": 13,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-TOMATO-1KG",
+      "store_id": "STORE-4",
+      "quantity": 24,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-SPAG-500",
+      "store_id": "STORE-4",
+      "quantity": 11,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PASTA-PENNE-500",
+      "store_id": "STORE-4",
+      "quantity": 18,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-MILK-SKIM-1L",
+      "store_id": "STORE-4",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-7UP-150",
+      "store_id": "STORE-5",
+      "quantity": 11,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-APPLE-1KG",
+      "store_id": "STORE-5",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-APPLEJUICE-1L",
+      "store_id": "STORE-5",
+      "quantity": 8,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BAGEL-6PACK",
+      "store_id": "STORE-5",
+      "quantity": 9,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BANANA-1KG",
+      "store_id": "STORE-5",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BREAD-WHITE-500",
+      "store_id": "STORE-5",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-BREAD-WHOLEWHEAT-500",
+      "store_id": "STORE-5",
+      "quantity": 5,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHIPS-PAPRIKA-150",
+      "store_id": "STORE-5",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHIPS-SALT-150",
+      "store_id": "STORE-5",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHOC-DARK-100",
+      "store_id": "STORE-5",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHOC-HAZELNUT-100",
+      "store_id": "STORE-5",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-CHOC-MILK-100",
+      "store_id": "STORE-5",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COFFEE-GROUND-250",
+      "store_id": "STORE-5",
+      "quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ORIG-150",
+      "store_id": "STORE-5",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-100",
+      "store_id": "STORE-5",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-150",
+      "store_id": "STORE-5",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-2L",
+      "store_id": "STORE-5",
+      "quantity": 11,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-COKE-ZERO-6X330",
+      "store_id": "STORE-5",
+      "quantity": 13,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-FANTA-ORANGE-150",
+      "store_id": "STORE-5",
+      "quantity": 9,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-MILK-OAT-1L",
+      "store_id": "STORE-5",
+      "quantity": 11,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-MILK-SKIM-1L",
+      "store_id": "STORE-5",
+      "quantity": 4,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-MILK-WHOLE-1L",
+      "store_id": "STORE-5",
+      "quantity": 14,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-OJ-1L",
+      "store_id": "STORE-5",
+      "quantity": 5,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PEPSI-MAX-150",
+      "store_id": "STORE-5",
+      "quantity": 4,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PEPSI-REG-150",
+      "store_id": "STORE-5",
+      "quantity": 8,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-PRETZELS-200",
+      "store_id": "STORE-5",
+      "quantity": 13,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-SPRITE-150",
+      "store_id": "STORE-5",
+      "quantity": 3,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    },
+    {
+      "product_id": "SKU-TEA-BLACK-50BAGS",
+      "store_id": "STORE-5",
+      "quantity": 5,
+      "reserved_quantity": 0,
+      "version": 1,
+      "updated_at": "2026-09-08T18:00:00+02:00"
+    }
   ]

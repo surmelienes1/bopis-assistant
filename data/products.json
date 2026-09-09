@@ -7,7 +7,9 @@
       "size": 1.5,
       "unit": "L",
       "price": 2.49,
-      "attributes": {"diet": "zero_sugar"},
+      "attributes": {
+        "diet": "zero_sugar"
+      },
       "allergens": []
     },
     {
@@ -18,7 +20,9 @@
       "size": 1.0,
       "unit": "L",
       "price": 1.99,
-      "attributes": {"diet": "zero_sugar"},
+      "attributes": {
+        "diet": "zero_sugar"
+      },
       "allergens": []
     },
     {
@@ -29,7 +33,10 @@
       "size": 1.98,
       "unit": "L",
       "price": 3.49,
-      "attributes": {"diet": "zero_sugar", "pack_count": 6},
+      "attributes": {
+        "diet": "zero_sugar",
+        "pack_count": 6
+      },
       "allergens": []
     },
     {
@@ -40,7 +47,9 @@
       "size": 1.5,
       "unit": "L",
       "price": 2.49,
-      "attributes": {"diet": "regular"},
+      "attributes": {
+        "diet": "regular"
+      },
       "allergens": []
     },
     {
@@ -51,7 +60,9 @@
       "size": 1.5,
       "unit": "L",
       "price": 2.29,
-      "attributes": {"diet": "zero_sugar"},
+      "attributes": {
+        "diet": "zero_sugar"
+      },
       "allergens": []
     },
     {
@@ -62,7 +73,9 @@
       "size": 1.5,
       "unit": "L",
       "price": 2.39,
-      "attributes": {"diet": "regular"},
+      "attributes": {
+        "diet": "regular"
+      },
       "allergens": []
     },
     {
@@ -73,8 +86,12 @@
       "size": 1.0,
       "unit": "L",
       "price": 1.09,
-      "attributes": {"fat_content": "3.5%"},
-      "allergens": ["milk"]
+      "attributes": {
+        "fat_content": "3.5%"
+      },
+      "allergens": [
+        "milk"
+      ]
     },
     {
       "id": "SKU-MILK-SKIM-1L",
@@ -84,8 +101,12 @@
       "size": 1.0,
       "unit": "L",
       "price": 1.05,
-      "attributes": {"fat_content": "0.1%"},
-      "allergens": ["milk"]
+      "attributes": {
+        "fat_content": "0.1%"
+      },
+      "allergens": [
+        "milk"
+      ]
     },
     {
       "id": "SKU-YOGURT-NAT-500",
@@ -96,7 +117,9 @@
       "unit": "g",
       "price": 1.79,
       "attributes": {},
-      "allergens": ["milk"]
+      "allergens": [
+        "milk"
+      ]
     },
     {
       "id": "SKU-BANANA-1KG",
@@ -140,7 +163,9 @@
       "unit": "g",
       "price": 1.29,
       "attributes": {},
-      "allergens": ["gluten"]
+      "allergens": [
+        "gluten"
+      ]
     },
     {
       "id": "SKU-PASTA-PENNE-500",
@@ -151,7 +176,9 @@
       "unit": "g",
       "price": 1.29,
       "attributes": {},
-      "allergens": ["gluten"]
+      "allergens": [
+        "gluten"
+      ]
     },
     {
       "id": "SKU-PASTA-FUSILLI-500",
@@ -162,7 +189,9 @@
       "unit": "g",
       "price": 1.49,
       "attributes": {},
-      "allergens": ["gluten"]
+      "allergens": [
+        "gluten"
+      ]
     },
     {
       "id": "SKU-RICE-BASMATI-1KG",
@@ -183,8 +212,13 @@
       "size": 100,
       "unit": "g",
       "price": 2.99,
-      "attributes": {"cocoa_pct": 70},
-      "allergens": ["soy", "milk"]
+      "attributes": {
+        "cocoa_pct": 70
+      },
+      "allergens": [
+        "soy",
+        "milk"
+      ]
     },
     {
       "id": "SKU-CHIPS-SALT-150",
@@ -194,7 +228,515 @@
       "size": 150,
       "unit": "g",
       "price": 1.99,
-      "attributes": {"vegan": true},
+      "attributes": {
+        "vegan": true
+      },
+      "allergens": []
+    },
+    {
+      "id": "SKU-FANTA-ORANGE-150",
+      "name": "Fanta Orange 1.5L",
+      "brand": "Coca-Cola",
+      "category": "soda",
+      "size": 1.5,
+      "unit": "L",
+      "price": 2.49,
+      "attributes": {
+        "diet": "regular"
+      },
+      "allergens": []
+    },
+    {
+      "id": "SKU-7UP-150",
+      "name": "7Up 1.5L",
+      "brand": "PepsiCo",
+      "category": "soda",
+      "size": 1.5,
+      "unit": "L",
+      "price": 2.29,
+      "attributes": {
+        "diet": "regular"
+      },
+      "allergens": []
+    },
+    {
+      "id": "SKU-PEPSI-REG-150",
+      "name": "Pepsi 1.5L",
+      "brand": "Pepsi",
+      "category": "soda",
+      "size": 1.5,
+      "unit": "L",
+      "price": 2.29,
+      "attributes": {
+        "diet": "regular"
+      },
+      "allergens": []
+    },
+    {
+      "id": "SKU-COKE-ZERO-2L",
+      "name": "Coca-Cola Zero 2L",
+      "brand": "Coca-Cola",
+      "category": "soda",
+      "size": 2.0,
+      "unit": "L",
+      "price": 3.79,
+      "attributes": {
+        "diet": "zero_sugar"
+      },
+      "allergens": []
+    },
+    {
+      "id": "SKU-MILK-OAT-1L",
+      "name": "Oat Milk 1L",
+      "brand": "Oatly",
+      "category": "dairy",
+      "size": 1.0,
+      "unit": "L",
+      "price": 2.49,
+      "attributes": {
+        "type": "plant_based"
+      },
+      "allergens": [
+        "oats"
+      ]
+    },
+    {
+      "id": "SKU-BUTTER-250",
+      "name": "Butter 250g",
+      "brand": "Alpenfrisch",
+      "category": "dairy",
+      "size": 250,
+      "unit": "g",
+      "price": 2.29,
+      "attributes": {
+        "fat_content": "82%"
+      },
+      "allergens": [
+        "milk"
+      ]
+    },
+    {
+      "id": "SKU-CHEESE-GOUDA-200",
+      "name": "Gouda Cheese 200g",
+      "brand": "Alpenfrisch",
+      "category": "dairy",
+      "size": 200,
+      "unit": "g",
+      "price": 3.49,
+      "attributes": {},
+      "allergens": [
+        "milk"
+      ]
+    },
+    {
+      "id": "SKU-ORANGE-1KG",
+      "name": "Oranges 1kg",
+      "brand": "Fresh Farms",
+      "category": "produce",
+      "size": 1.0,
+      "unit": "kg",
+      "price": 2.29,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-GRAPES-500G",
+      "name": "Grapes 500g",
+      "brand": "Fresh Farms",
+      "category": "produce",
+      "size": 500,
+      "unit": "g",
+      "price": 2.79,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-AVOCADO-4PACK",
+      "name": "Avocados 4-pack",
+      "brand": "Fresh Farms",
+      "category": "produce",
+      "size": 4,
+      "unit": "pcs",
+      "price": 3.29,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-ONION-1KG",
+      "name": "Onions 1kg",
+      "brand": "Fresh Farms",
+      "category": "produce",
+      "size": 1.0,
+      "unit": "kg",
+      "price": 2.19,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-PASTA-LASAGNE-500",
+      "name": "Lasagne Sheets 500g",
+      "brand": "Barilla",
+      "category": "pasta",
+      "size": 500,
+      "unit": "g",
+      "price": 1.99,
+      "attributes": {},
+      "allergens": [
+        "gluten"
+      ]
+    },
+    {
+      "id": "SKU-PASTA-GF-PENNE-500",
+      "name": "Gluten-Free Penne 500g",
+      "brand": "Barilla",
+      "category": "pasta",
+      "size": 500,
+      "unit": "g",
+      "price": 2.49,
+      "attributes": {
+        "gluten_free": true
+      },
+      "allergens": []
+    },
+    {
+      "id": "SKU-RICE-JASMINE-1KG",
+      "name": "Jasmine Rice 1kg",
+      "brand": "Thai Kitchen",
+      "category": "rice",
+      "size": 1.0,
+      "unit": "kg",
+      "price": 3.19,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-RICE-BROWN-1KG",
+      "name": "Brown Rice 1kg",
+      "brand": "Tilda",
+      "category": "rice",
+      "size": 1.0,
+      "unit": "kg",
+      "price": 2.79,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-CHOC-MILK-100",
+      "name": "Milk Chocolate Bar 100g",
+      "brand": "Lindt",
+      "category": "chocolate",
+      "size": 100,
+      "unit": "g",
+      "price": 2.79,
+      "attributes": {
+        "cocoa_pct": 30
+      },
+      "allergens": [
+        "milk"
+      ]
+    },
+    {
+      "id": "SKU-CHOC-HAZELNUT-100",
+      "name": "Hazelnut Chocolate Bar 100g",
+      "brand": "Lindt",
+      "category": "chocolate",
+      "size": 100,
+      "unit": "g",
+      "price": 3.19,
+      "attributes": {
+        "cocoa_pct": 45
+      },
+      "allergens": [
+        "milk",
+        "nuts"
+      ]
+    },
+    {
+      "id": "SKU-CHIPS-PAPRIKA-150",
+      "name": "Paprika Chips 150g",
+      "brand": "Lay's",
+      "category": "snacks",
+      "size": 150,
+      "unit": "g",
+      "price": 1.99,
+      "attributes": {
+        "vegan": true
+      },
+      "allergens": []
+    },
+    {
+      "id": "SKU-PRETZELS-200",
+      "name": "Pretzels 200g",
+      "brand": "Snyder's",
+      "category": "snacks",
+      "size": 200,
+      "unit": "g",
+      "price": 2.29,
+      "attributes": {
+        "vegan": true
+      },
+      "allergens": [
+        "gluten"
+      ]
+    },
+    {
+      "id": "SKU-BREAD-WHITE-500",
+      "name": "White Bread 500g",
+      "brand": "Wonder",
+      "category": "bakery",
+      "size": 500,
+      "unit": "g",
+      "price": 1.89,
+      "attributes": {},
+      "allergens": [
+        "gluten"
+      ]
+    },
+    {
+      "id": "SKU-BREAD-WHOLEWHEAT-500",
+      "name": "Whole Wheat Bread 500g",
+      "brand": "Wonder",
+      "category": "bakery",
+      "size": 500,
+      "unit": "g",
+      "price": 1.99,
+      "attributes": {},
+      "allergens": [
+        "gluten"
+      ]
+    },
+    {
+      "id": "SKU-BAGEL-6PACK",
+      "name": "Bagels 6-Pack",
+      "brand": "Thomas'",
+      "category": "bakery",
+      "size": 6,
+      "unit": "pcs",
+      "price": 2.99,
+      "attributes": {},
+      "allergens": [
+        "gluten"
+      ]
+    },
+    {
+      "id": "SKU-PIZZA-MARGH-400",
+      "name": "Frozen Margherita Pizza 400g",
+      "brand": "Dr. Oetker",
+      "category": "frozen",
+      "size": 400,
+      "unit": "g",
+      "price": 3.49,
+      "attributes": {},
+      "allergens": [
+        "gluten",
+        "milk"
+      ]
+    },
+    {
+      "id": "SKU-ICECREAM-VANILLA-500",
+      "name": "Vanilla Ice Cream 500ml",
+      "brand": "Haagen-Dazs",
+      "category": "frozen",
+      "size": 500,
+      "unit": "ml",
+      "price": 4.99,
+      "attributes": {},
+      "allergens": [
+        "milk"
+      ]
+    },
+    {
+      "id": "SKU-ICECREAM-CHOC-500",
+      "name": "Chocolate Ice Cream 500ml",
+      "brand": "Haagen-Dazs",
+      "category": "frozen",
+      "size": 500,
+      "unit": "ml",
+      "price": 4.99,
+      "attributes": {},
+      "allergens": [
+        "milk"
+      ]
+    },
+    {
+      "id": "SKU-CANNED-TOMATO-400",
+      "name": "Canned Chopped Tomatoes 400g",
+      "brand": "Cirio",
+      "category": "canned",
+      "size": 400,
+      "unit": "g",
+      "price": 0.99,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-CANNED-BEANS-400",
+      "name": "Canned Kidney Beans 400g",
+      "brand": "Cirio",
+      "category": "canned",
+      "size": 400,
+      "unit": "g",
+      "price": 1.09,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-CANNED-CORN-400",
+      "name": "Canned Sweetcorn 400g",
+      "brand": "Cirio",
+      "category": "canned",
+      "size": 400,
+      "unit": "g",
+      "price": 1.05,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-CEREAL-CORNFLAKES-500",
+      "name": "Corn Flakes 500g",
+      "brand": "Kellogg's",
+      "category": "breakfast",
+      "size": 500,
+      "unit": "g",
+      "price": 2.99,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-CEREAL-MUESLI-500",
+      "name": "Muesli 500g",
+      "brand": "Kellogg's",
+      "category": "breakfast",
+      "size": 500,
+      "unit": "g",
+      "price": 3.19,
+      "attributes": {},
+      "allergens": [
+        "gluten",
+        "nuts"
+      ]
+    },
+    {
+      "id": "SKU-OATS-ROLLED-500",
+      "name": "Rolled Oats 500g",
+      "brand": "Quaker",
+      "category": "breakfast",
+      "size": 500,
+      "unit": "g",
+      "price": 2.19,
+      "attributes": {},
+      "allergens": [
+        "gluten"
+      ]
+    },
+    {
+      "id": "SKU-COFFEE-GROUND-250",
+      "name": "Ground Coffee 250g",
+      "brand": "Lavazza",
+      "category": "hot_beverages",
+      "size": 250,
+      "unit": "g",
+      "price": 4.99,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-TEA-BLACK-50BAGS",
+      "name": "Black Tea 50 Bags",
+      "brand": "Lipton",
+      "category": "hot_beverages",
+      "size": 50,
+      "unit": "pcs",
+      "price": 2.99,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-OJ-1L",
+      "name": "Orange Juice 1L",
+      "brand": "Tropicana",
+      "category": "juice",
+      "size": 1.0,
+      "unit": "L",
+      "price": 2.49,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-APPLEJUICE-1L",
+      "name": "Apple Juice 1L",
+      "brand": "Tropicana",
+      "category": "juice",
+      "size": 1.0,
+      "unit": "L",
+      "price": 2.29,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-PAPERTOWEL-2ROLL",
+      "name": "Paper Towels 2-Roll",
+      "brand": "Bounty",
+      "category": "paper_goods",
+      "size": 2,
+      "unit": "roll",
+      "price": 3.49,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-TOILETPAPER-4ROLL",
+      "name": "Toilet Paper 4-Roll",
+      "brand": "Charmin",
+      "category": "paper_goods",
+      "size": 4,
+      "unit": "roll",
+      "price": 3.99,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-DISHSOAP-500ML",
+      "name": "Dish Soap 500ml",
+      "brand": "Fairy",
+      "category": "cleaning",
+      "size": 500,
+      "unit": "ml",
+      "price": 2.79,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-HANDSOAP-300ML",
+      "name": "Hand Soap 300ml",
+      "brand": "Dove",
+      "category": "cleaning",
+      "size": 300,
+      "unit": "ml",
+      "price": 2.49,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-LAUNDRY-DETERGENT-1L",
+      "name": "Laundry Detergent 1L",
+      "brand": "Persil",
+      "category": "cleaning",
+      "size": 1.0,
+      "unit": "L",
+      "price": 5.99,
+      "attributes": {},
+      "allergens": []
+    },
+    {
+      "id": "SKU-HONEY-NATURAL-350",
+      "name": "Natural Honey 350g",
+      "brand": "Nature Nate's",
+      "category": "spreads",
+      "size": 350,
+      "unit": "g",
+      "price": 4.49,
+      "attributes": {},
       "allergens": []
     }
   ]

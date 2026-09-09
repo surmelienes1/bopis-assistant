@@ -92,5 +92,497 @@
           "exception_reason": null
         }
       ]
+    },
+    {
+      "id": "ORD-1003",
+      "customer_id": "CUST-2003",
+      "store_id": "STORE-2",
+      "status": "ASSIGNED",
+      "pickup_deadline": "2026-09-09T16:00:00+02:00",
+      "created_at": "2026-09-08T19:00:00+02:00",
+      "updated_at": "2026-09-08T19:00:00+02:00",
+      "version": 1,
+      "items": [
+        {
+          "id": "ITEM-1003-1",
+          "order_id": "ORD-1003",
+          "product_id": "SKU-FANTA-ORANGE-150",
+          "requested_quantity": 2,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1003-2",
+          "order_id": "ORD-1003",
+          "product_id": "SKU-RICE-BASMATI-1KG",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1003-3",
+          "order_id": "ORD-1003",
+          "product_id": "SKU-CANNED-TOMATO-400",
+          "requested_quantity": 3,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1003-4",
+          "order_id": "ORD-1003",
+          "product_id": "SKU-CHEESE-GOUDA-200",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        }
+      ]
+    },
+    {
+      "id": "ORD-1004",
+      "customer_id": "CUST-2004",
+      "store_id": "STORE-3",
+      "status": "ASSIGNED",
+      "pickup_deadline": "2026-09-09T19:00:00+02:00",
+      "created_at": "2026-09-08T20:15:00+02:00",
+      "updated_at": "2026-09-08T20:15:00+02:00",
+      "version": 1,
+      "items": [
+        {
+          "id": "ITEM-1004-1",
+          "order_id": "ORD-1004",
+          "product_id": "SKU-BAGEL-6PACK",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1004-2",
+          "order_id": "ORD-1004",
+          "product_id": "SKU-LAUNDRY-DETERGENT-1L",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1004-3",
+          "order_id": "ORD-1004",
+          "product_id": "SKU-CEREAL-CORNFLAKES-500",
+          "requested_quantity": 2,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1004-4",
+          "order_id": "ORD-1004",
+          "product_id": "SKU-CHOC-DARK-100",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        }
+      ]
+    },
+    {
+      "id": "ORD-1005",
+      "customer_id": "CUST-2005",
+      "store_id": "STORE-1",
+      "status": "PICKING",
+      "pickup_deadline": "2026-09-09T15:00:00+02:00",
+      "created_at": "2026-09-09T08:30:00+02:00",
+      "updated_at": "2026-09-09T09:10:00+02:00",
+      "version": 1,
+      "items": [
+        {
+          "id": "ITEM-1005-1",
+          "order_id": "ORD-1005",
+          "product_id": "SKU-PASTA-PENNE-500",
+          "requested_quantity": 1,
+          "picked_quantity": 1,
+          "status": "PICKED",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1005-2",
+          "order_id": "ORD-1005",
+          "product_id": "SKU-COKE-ORIG-150",
+          "requested_quantity": 1,
+          "picked_quantity": 1,
+          "status": "SUBSTITUTED",
+          "substituted_product_id": "SKU-SPRITE-150",
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1005-3",
+          "order_id": "ORD-1005",
+          "product_id": "SKU-YOGURT-NAT-500",
+          "requested_quantity": 2,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1005-4",
+          "order_id": "ORD-1005",
+          "product_id": "SKU-CHIPS-SALT-150",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        }
+      ]
+    },
+    {
+      "id": "ORD-1006",
+      "customer_id": "CUST-2006",
+      "store_id": "STORE-4",
+      "status": "ASSIGNED",
+      "pickup_deadline": "2026-09-09T17:00:00+02:00",
+      "created_at": "2026-09-09T07:45:00+02:00",
+      "updated_at": "2026-09-09T07:45:00+02:00",
+      "version": 1,
+      "items": [
+        {
+          "id": "ITEM-1006-1",
+          "order_id": "ORD-1006",
+          "product_id": "SKU-ICECREAM-VANILLA-500",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1006-2",
+          "order_id": "ORD-1006",
+          "product_id": "SKU-COFFEE-GROUND-250",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1006-3",
+          "order_id": "ORD-1006",
+          "product_id": "SKU-OJ-1L",
+          "requested_quantity": 2,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1006-4",
+          "order_id": "ORD-1006",
+          "product_id": "SKU-PIZZA-MARGH-400",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        }
+      ]
+    },
+    {
+      "id": "ORD-1007",
+      "customer_id": "CUST-2007",
+      "store_id": "STORE-5",
+      "status": "ASSIGNED",
+      "pickup_deadline": "2026-09-09T13:30:00+02:00",
+      "created_at": "2026-09-09T10:00:00+02:00",
+      "updated_at": "2026-09-09T10:00:00+02:00",
+      "version": 1,
+      "items": [
+        {
+          "id": "ITEM-1007-1",
+          "order_id": "ORD-1007",
+          "product_id": "SKU-PEPSI-REG-150",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1007-2",
+          "order_id": "ORD-1007",
+          "product_id": "SKU-CHIPS-PAPRIKA-150",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1007-3",
+          "order_id": "ORD-1007",
+          "product_id": "SKU-COFFEE-GROUND-250",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1007-4",
+          "order_id": "ORD-1007",
+          "product_id": "SKU-APPLEJUICE-1L",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        }
+      ]
+    },
+    {
+      "id": "ORD-1008",
+      "customer_id": "CUST-2008",
+      "store_id": "STORE-1",
+      "status": "READY",
+      "pickup_deadline": "2026-09-09T12:00:00+02:00",
+      "created_at": "2026-09-08T21:00:00+02:00",
+      "updated_at": "2026-09-09T07:00:00+02:00",
+      "version": 1,
+      "items": [
+        {
+          "id": "ITEM-1008-1",
+          "order_id": "ORD-1008",
+          "product_id": "SKU-MILK-SKIM-1L",
+          "requested_quantity": 1,
+          "picked_quantity": 1,
+          "status": "PICKED",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1008-2",
+          "order_id": "ORD-1008",
+          "product_id": "SKU-BANANA-1KG",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "UNAVAILABLE",
+          "substituted_product_id": null,
+          "exception_reason": "No valid substitution candidates were available; associate removed the item."
+        },
+        {
+          "id": "ITEM-1008-3",
+          "order_id": "ORD-1008",
+          "product_id": "SKU-PASTA-SPAG-500",
+          "requested_quantity": 1,
+          "picked_quantity": 1,
+          "status": "SUBSTITUTED",
+          "substituted_product_id": "SKU-PASTA-PENNE-500",
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1008-4",
+          "order_id": "ORD-1008",
+          "product_id": "SKU-APPLE-1KG",
+          "requested_quantity": 2,
+          "picked_quantity": 2,
+          "status": "PICKED",
+          "substituted_product_id": null,
+          "exception_reason": null
+        }
+      ]
+    },
+    {
+      "id": "ORD-1009",
+      "customer_id": "CUST-2009",
+      "store_id": "STORE-2",
+      "status": "COMPLETED",
+      "pickup_deadline": "2026-09-08T18:00:00+02:00",
+      "created_at": "2026-09-07T16:00:00+02:00",
+      "updated_at": "2026-09-08T18:20:00+02:00",
+      "version": 1,
+      "items": [
+        {
+          "id": "ITEM-1009-1",
+          "order_id": "ORD-1009",
+          "product_id": "SKU-COKE-ZERO-100",
+          "requested_quantity": 1,
+          "picked_quantity": 1,
+          "status": "PICKED",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1009-2",
+          "order_id": "ORD-1009",
+          "product_id": "SKU-MILK-WHOLE-1L",
+          "requested_quantity": 1,
+          "picked_quantity": 1,
+          "status": "PICKED",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1009-3",
+          "order_id": "ORD-1009",
+          "product_id": "SKU-CANNED-BEANS-400",
+          "requested_quantity": 2,
+          "picked_quantity": 2,
+          "status": "PICKED",
+          "substituted_product_id": null,
+          "exception_reason": null
+        }
+      ]
+    },
+    {
+      "id": "ORD-1010",
+      "customer_id": "CUST-2010",
+      "store_id": "STORE-3",
+      "status": "CANCELLED",
+      "pickup_deadline": "2026-09-08T14:00:00+02:00",
+      "created_at": "2026-09-07T10:00:00+02:00",
+      "updated_at": "2026-09-07T11:30:00+02:00",
+      "version": 1,
+      "items": [
+        {
+          "id": "ITEM-1010-1",
+          "order_id": "ORD-1010",
+          "product_id": "SKU-RICE-BASMATI-1KG",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1010-2",
+          "order_id": "ORD-1010",
+          "product_id": "SKU-CHOC-MILK-100",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        }
+      ]
+    },
+    {
+      "id": "ORD-1011",
+      "customer_id": "CUST-2011",
+      "store_id": "STORE-1",
+      "status": "CREATED",
+      "pickup_deadline": "2026-09-10T11:00:00+02:00",
+      "created_at": "2026-09-09T11:20:00+02:00",
+      "updated_at": "2026-09-09T11:20:00+02:00",
+      "version": 1,
+      "items": [
+        {
+          "id": "ITEM-1011-1",
+          "order_id": "ORD-1011",
+          "product_id": "SKU-SPRITE-150",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1011-2",
+          "order_id": "ORD-1011",
+          "product_id": "SKU-YOGURT-NAT-500",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        }
+      ]
+    },
+    {
+      "id": "ORD-1012",
+      "customer_id": "CUST-2012",
+      "store_id": "STORE-4",
+      "status": "PARTIALLY_PICKED",
+      "pickup_deadline": "2026-09-09T18:30:00+02:00",
+      "created_at": "2026-09-09T09:00:00+02:00",
+      "updated_at": "2026-09-09T10:45:00+02:00",
+      "version": 1,
+      "items": [
+        {
+          "id": "ITEM-1012-1",
+          "order_id": "ORD-1012",
+          "product_id": "SKU-OJ-1L",
+          "requested_quantity": 1,
+          "picked_quantity": 1,
+          "status": "PICKED",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1012-2",
+          "order_id": "ORD-1012",
+          "product_id": "SKU-CEREAL-MUESLI-500",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1012-3",
+          "order_id": "ORD-1012",
+          "product_id": "SKU-BREAD-WHOLEWHEAT-500",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        }
+      ]
+    },
+    {
+      "id": "ORD-1013",
+      "customer_id": "CUST-2013",
+      "store_id": "STORE-2",
+      "status": "EXCEPTION",
+      "pickup_deadline": "2026-09-09T14:00:00+02:00",
+      "created_at": "2026-09-09T08:00:00+02:00",
+      "updated_at": "2026-09-09T08:50:00+02:00",
+      "version": 1,
+      "items": [
+        {
+          "id": "ITEM-1013-1",
+          "order_id": "ORD-1013",
+          "product_id": "SKU-HONEY-NATURAL-350",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        },
+        {
+          "id": "ITEM-1013-2",
+          "order_id": "ORD-1013",
+          "product_id": "SKU-TOILETPAPER-4ROLL",
+          "requested_quantity": 1,
+          "picked_quantity": 0,
+          "status": "PENDING",
+          "substituted_product_id": null,
+          "exception_reason": null
+        }
+      ]
     }
   ]

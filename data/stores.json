@@ -5,7 +5,9 @@
       "inventory_confidence": 0.95,
       "distances_km": {
         "STORE-2": 3.4,
-        "STORE-3": 6.1
+        "STORE-3": 6.1,
+        "STORE-4": 5.2,
+        "STORE-5": 12.7
       }
     },
     {
@@ -14,7 +16,9 @@
       "inventory_confidence": 0.9,
       "distances_km": {
         "STORE-1": 3.4,
-        "STORE-3": 4.8
+        "STORE-3": 4.8,
+        "STORE-4": 7.9,
+        "STORE-5": 15.3
       }
     },
     {
@@ -23,7 +27,31 @@
       "inventory_confidence": 0.85,
       "distances_km": {
         "STORE-1": 6.1,
-        "STORE-2": 4.8
+        "STORE-2": 4.8,
+        "STORE-4": 9.4,
+        "STORE-5": 18.6
+      }
+    },
+    {
+      "store_id": "STORE-4",
+      "name": "Riverside Market",
+      "inventory_confidence": 0.92,
+      "distances_km": {
+        "STORE-1": 5.2,
+        "STORE-2": 7.9,
+        "STORE-3": 9.4,
+        "STORE-5": 10.1
+      }
+    },
+    {
+      "store_id": "STORE-5",
+      "name": "Airport Convenience",
+      "inventory_confidence": 0.75,
+      "distances_km": {
+        "STORE-1": 12.7,
+        "STORE-2": 15.3,
+        "STORE-3": 18.6,
+        "STORE-4": 10.1
       }
     }
   ]
