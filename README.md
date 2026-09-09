@@ -1,6 +1,6 @@
 # BOPIS Store Associate Assistant
 
-A vertical slice of the substitution-recommendation exception flow from the design doc's §13: an associate reports an item unavailable, a trusted candidate set is retrieved and hard-filtered deterministically, an LLM ranks and explains that set, the ranking is validated before the associate ever sees it, and only a re-validated, associate-approved acceptance is allowed to touch inventory or order state.
+A vertical slice of the substitution-recommendation exception flow: an associate reports an item unavailable, a trusted candidate set is retrieved and hard-filtered deterministically, an LLM ranks and explains that set, the ranking is validated before the associate ever sees it, and only a re-validated, associate-approved acceptance is allowed to touch inventory or order state.
 
 The prototype also includes deterministic nearby-store inventory discovery and shelf-issue reporting as supporting exception capabilities.
 
@@ -343,10 +343,10 @@ Explicitly out of scope:
 
 * **No persistent database** — `db.py` is in-memory and seeded from JSON files at startup. A restart resets state.
 * **No authentication/authorization** — no real associate identity exists; audit events use `"associate_id": "prototype"` as an explicit placeholder.
-* **No offline synchronization** — the design doc's §7.4 local queue/sync model is not implemented.
+* **No offline synchronization** — the prototype assumes connectivity during the picking workflow; an offline-first queue/sync model is not implemented.
 * **No real customer allergy data source** — `candidates.py` accepts and hard-filters on an explicit `customer_allergies` parameter, but no endpoint in this prototype currently supplies real customer-allergy data, so the parameter defaults to `None` (a documented no-op) on every call the API makes today. The filter is implemented and tested; it just isn't wired to anything upstream yet.
-* **No customer-ready notification dispatch** — `POST /orders/{id}/complete` transitions the order to `READY` and is fully validated/audited, but the outbound "your order is ready" message (SMS/push/email) is a Notification Service concern consuming that state change, per the design doc's §5 event bus — not implemented in this vertical slice.
-* **No manager notification dispatch for shelf depletion** — `POST .../shelf-report` captures the trusted signal (empty/low/damaged/misplaced) as an audit event, but pushing an alert to a store manager is the same Notification Service concern as customer notification, and is likewise out of scope here. The event exists precisely so that service has something real to consume.
+* **No customer-ready notification dispatch** — `POST /orders/{id}/complete` transitions the order to `READY` and is fully validated/audited, but the outbound "your order is ready" message (SMS/push/email) would be handled by a Notification Service consuming the state change; it is not implemented in this vertical slice.
+* **No manager notification dispatch for shelf depletion** — `POST .../shelf-report` captures the trusted signal (empty/low/damaged/misplaced) as an audit event, but pushing an alert to a store manager is a Notification Service concern and is out of scope here. The event exists precisely so that a future downstream service has something real to consume.
 * **No production reservation system** — `Inventory.reserved_quantity` exists for schema fidelity but is not used. The prototype decrements `quantity` at acceptance time.
 * **No production-grade distributed transaction infrastructure** — `transactions.py` provides idempotency and optimistic locking within the in-memory prototype, but it cannot provide real database crash atomicity across multiple persistent writes.
 * **No production store-fulfillment orchestration** — nearby-store discovery is implemented as a deterministic prototype capability, but real store routing, inventory federation, reservation transfer, and fulfillment coordination are out of scope.
@@ -367,9 +367,9 @@ Prioritized by risk and value, not by effort:
 7. **Close the SAP AI Core coverage gap for real**, by installing `ai-core-sdk` / `generative-ai-hub-sdk` in CI and adding the same-shaped success-path test the "Automated tests" section above already flags as missing.
 8. **CI pipeline**: run `pytest --cov` on every PR with a coverage floor (e.g. fail under 95%), plus lint/type-check (`ruff`, `mypy`).
 9. **Structured logging and basic tracing**, especially around the one place a real bug would be expensive to debug blind: the gap between `decrement_inventory` succeeding and `update_order_item_status` failing, which `transactions.py` already raises loudly for but currently only to stdout.
-10. **Offline queue / sync** per the design doc's §7.4 — lowest priority on this list only because it's the largest single lift, not because it matters least; a store associate's connectivity is exactly where this system is most likely to be needed under pressure.
+10. **Offline queue / sync** lowest priority on this list only because it's the largest single lift, not because it matters least; a store associate's connectivity is exactly where this system is most likely to be needed under pressure.
 
-Given only a week, I'd stop after (1)–(4): those are the cases where "prototype" behavior is currently indistinguishable from "silently wrong" or "silently undelivered" behavior, which is a different risk category from "feature not built yet." See `PROJECT_DOSSIER.md` for the fuller one-month and production-scale roadmap.
+Given only a week, I'd stop after (1)–(4): those are the cases where "prototype" behavior is currently indistinguishable from "silently wrong" or "silently undelivered" behavior, which is a different risk category from "feature not built yet."
 
 ## Demo scenario
 
