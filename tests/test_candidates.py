@@ -53,7 +53,10 @@ class TestGetSubstitutionCandidatesAgainstRealSeedData:
             "SKU-COKE-ZERO-100",
             "SKU-COKE-ORIG-150",
             "SKU-PEPSI-MAX-150",
+            "SKU-PEPSI-REG-150",
             "SKU-SPRITE-150",
+            "SKU-FANTA-ORANGE-150",
+            "SKU-7UP-150",
         }
 
     def test_coke_zero_150_excludes_original_product_itself(self, fresh_db):
@@ -88,30 +91,25 @@ class TestGetSubstitutionCandidatesAgainstRealSeedData:
             assert set(candidate) == {"product_id", "name", "brand", "size", "unit", "price"}
 
     def test_different_stores_can_yield_different_candidate_sets(self, fresh_db):
-        # STORE-3 has zero stock of the 6x330 pack (same as everywhere
-        # it'd be excluded anyway) but ALSO has different stock levels
-        # generally; the key behavior under test is that store_id is
-        # actually threaded through to the stock filter, not ignored.
+        # SKU-MILK-SKIM-1L is SKU-MILK-WHOLE-1L's only same-category,
+        # in-price-band candidate. It's in stock at STORE-1 but has
+        # quantity 0 at STORE-4 -- the key behavior under test is that
+        # store_id is actually threaded through to the stock filter,
+        # not ignored or cached across calls.
         store1 = {
             c["product_id"]
             for c in candidates.get_substitution_candidates(
-                "SKU-YOGURT-NAT-500", "STORE-1"
+                "SKU-MILK-WHOLE-1L", "STORE-1"
             )
         }
-        store3 = {
+        store4 = {
             c["product_id"]
             for c in candidates.get_substitution_candidates(
-                "SKU-YOGURT-NAT-500", "STORE-3"
+                "SKU-MILK-WHOLE-1L", "STORE-4"
             )
         }
-        # Dairy category candidates for yogurt are milk SKUs, both out
-        # of the +/-30% price band around yogurt's 1.79 (milk is ~1.05-
-        # 1.09) in both stores -- so both are legitimately empty. The
-        # real assertion here is that the call succeeds per-store
-        # without raising, proving store_id is honored as a real
-        # parameter rather than accidentally shared/cached across calls.
-        assert store1 == set()
-        assert store3 == set()
+        assert store1 == {"SKU-MILK-SKIM-1L"}
+        assert store4 == set()
 
     def test_unknown_product_id_raises_value_error(self, fresh_db):
         with pytest.raises(ValueError, match="not found in catalog"):

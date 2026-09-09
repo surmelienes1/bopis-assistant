@@ -59,21 +59,35 @@ class TestCatalogAndDirectoryEndpoints:
         resp = api_client.get("/products")
         assert resp.status_code == 200
         body = resp.json()
-        assert len(body) == 18
+        assert len(body) == 59
         assert {"id", "name", "brand", "category", "size", "unit", "price"} <= set(body[0])
 
     def test_list_stores_returns_directory_shape_only(self, api_client):
         resp = api_client.get("/stores")
         assert resp.status_code == 200
         body = resp.json()
-        assert len(body) == 3
+        assert len(body) == 5
         for store in body:
             assert set(store) == {"store_id", "name"}
 
     def test_list_orders_unfiltered(self, api_client):
         resp = api_client.get("/orders")
         assert resp.status_code == 200
-        assert {o["id"] for o in resp.json()} == {"ORD-1001", "ORD-1002"}
+        assert {o["id"] for o in resp.json()} == {
+            "ORD-1001",
+            "ORD-1002",
+            "ORD-1003",
+            "ORD-1004",
+            "ORD-1005",
+            "ORD-1006",
+            "ORD-1007",
+            "ORD-1008",
+            "ORD-1009",
+            "ORD-1010",
+            "ORD-1011",
+            "ORD-1012",
+            "ORD-1013",
+        }
 
     def test_list_orders_filtered_by_store_id(self, api_client):
         resp = api_client.get("/orders", params={"store_id": "STORE-9"})
@@ -83,7 +97,8 @@ class TestCatalogAndDirectoryEndpoints:
     def test_list_orders_filtered_by_status(self, api_client):
         resp = api_client.get("/orders", params={"status": "READY"})
         assert resp.status_code == 200
-        assert resp.json() == []
+        # ORD-1008 is the seed data's one READY order.
+        assert {o["id"] for o in resp.json()} == {"ORD-1008"}
 
     def test_get_order_found(self, api_client):
         resp = api_client.get("/orders/ORD-1001")
@@ -147,7 +162,7 @@ class TestReportItemUnavailable:
         resp = api_client.post("/orders/ORD-1001/items/ITEM-1001-1/unavailable")
         assert resp.status_code == 200
         body = resp.json()
-        assert len(body) == 4  # the known Coke Zero 1.5L candidate set
+        assert len(body) == 7  # the known Coke Zero 1.5L candidate set
         for rec in body:
             assert "fallback" in rec["reason"]
             # Display enrichment fields merged in from the trusted
@@ -477,6 +492,12 @@ class TestNearbyInventory:
         assert resp.status_code == 404
 
     def test_known_scores_and_sort_order(self, api_client):
+        # Scores per backend/api.py's documented formula:
+        #   score = min(qty/20, 1.0) * (1/distance_km) * confidence
+        # STORE-2: avail=14/20=0.70, dist=3.4,  conf=0.90 -> 0.185
+        # STORE-4: avail=15/20=0.75, dist=5.2,  conf=0.92 -> 0.133
+        # STORE-3: avail=9/20=0.45,  dist=6.1,  conf=0.85 -> 0.063
+        # STORE-5: avail=14/20=0.70, dist=12.7, conf=0.75 -> 0.041
         resp = api_client.get(
             "/inventory/nearby",
             params={"product_id": "SKU-COKE-ZERO-150", "store_id": "STORE-1"},
@@ -486,10 +507,12 @@ class TestNearbyInventory:
         assert body["product_id"] == "SKU-COKE-ZERO-150"
         assert body["source_store_id"] == "STORE-1"
         stores = body["nearby_stores"]
-        assert [s["store_id"] for s in stores] == ["STORE-2", "STORE-3"]
+        assert [s["store_id"] for s in stores] == ["STORE-2", "STORE-4", "STORE-3", "STORE-5"]
         assert stores[0]["score"] == 0.185
-        assert stores[1]["score"] == 0.063
-        assert stores[0]["score"] > stores[1]["score"]
+        assert stores[1]["score"] == 0.133
+        assert stores[2]["score"] == 0.063
+        assert stores[3]["score"] == 0.041
+        assert stores[0]["score"] > stores[1]["score"] > stores[2]["score"] > stores[3]["score"]
 
     def test_requesting_store_never_included_in_results(self, api_client):
         resp = api_client.get(
@@ -529,15 +552,16 @@ class TestNearbyInventory:
             api_module.db, "get_store_inventory_confidence", fake_get_confidence
         )
 
+        # STORE-3 excluded for missing confidence; remaining scores:
+        # STORE-2 0.185, STORE-4 0.133, STORE-5 0.041 (see
+        # test_known_scores_and_sort_order for the formula/derivation).
         resp = api_client.get(
             "/inventory/nearby",
             params={"product_id": "SKU-COKE-ZERO-150", "store_id": "STORE-1"},
         )
         assert resp.status_code == 200
         stores = resp.json()["nearby_stores"]
-        # STORE-3 would otherwise appear (see test_known_scores_and_sort_order)
-        # but is skipped entirely here due to the missing confidence value.
-        assert [s["store_id"] for s in stores] == ["STORE-2"]
+        assert [s["store_id"] for s in stores] == ["STORE-2", "STORE-4", "STORE-5"]
 
 
 # ----------------------------------------------------------------------

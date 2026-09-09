@@ -53,9 +53,9 @@ class TestInitAndGuard:
             db_module.get_product("anything")
 
     def test_init_db_loads_all_four_seed_files(self, fresh_db):
-        assert len(fresh_db.list_products()) == 18
-        assert len(fresh_db.list_orders()) == 2
-        assert len(fresh_db.list_stores()) == 3
+        assert len(fresh_db.list_products()) == 59
+        assert len(fresh_db.list_orders()) == 13
+        assert len(fresh_db.list_stores()) == 5
         assert fresh_db.list_audit_events() == []
 
     def test_init_db_replaces_rather_than_merges(self, fresh_db, seed_data_dir):
@@ -165,9 +165,13 @@ class TestListProductsByCategory:
             "SKU-COKE-ZERO-150",
             "SKU-COKE-ZERO-100",
             "SKU-COKE-ZERO-6X330",
+            "SKU-COKE-ZERO-2L",
             "SKU-COKE-ORIG-150",
             "SKU-PEPSI-MAX-150",
+            "SKU-PEPSI-REG-150",
             "SKU-SPRITE-150",
+            "SKU-FANTA-ORANGE-150",
+            "SKU-7UP-150",
         }
 
     def test_excludes_given_id(self, fresh_db):
@@ -187,21 +191,37 @@ class TestListProductsByCategory:
 
 class TestListOrders:
     def test_no_filter_returns_all(self, fresh_db):
-        assert len(fresh_db.list_orders()) == 2
+        assert len(fresh_db.list_orders()) == 13
 
     def test_filter_by_store_id(self, fresh_db):
         orders = fresh_db.list_orders(store_id="STORE-1")
-        assert {o.id for o in orders} == {"ORD-1001", "ORD-1002"}
+        assert {o.id for o in orders} == {
+            "ORD-1001",
+            "ORD-1002",
+            "ORD-1005",
+            "ORD-1008",
+            "ORD-1011",
+        }
 
     def test_filter_by_store_id_no_match(self, fresh_db):
         assert fresh_db.list_orders(store_id="STORE-9") == []
 
     def test_filter_by_status(self, fresh_db):
         orders = fresh_db.list_orders(status=OrderStatus.ASSIGNED)
-        assert len(orders) == 2
+        assert len(orders) == 6
 
     def test_filter_by_status_no_match(self, fresh_db):
-        assert fresh_db.list_orders(status=OrderStatus.READY) == []
+        # The seed data now has at least one order in every status it
+        # exercises (ASSIGNED, PICKING, READY, COMPLETED, CANCELLED,
+        # CREATED, PARTIALLY_PICKED, EXCEPTION), so a pure status filter
+        # can no longer be guaranteed empty. Combine a real, in-use
+        # status with a store_id that doesn't carry it (the only READY
+        # order, ORD-1008, belongs to STORE-1) to keep this a genuine
+        # "filter matches nothing" case without depending on unused
+        # enum members.
+        assert (
+            fresh_db.list_orders(store_id="STORE-2", status=OrderStatus.READY) == []
+        )
 
     def test_filter_by_store_and_status_combined(self, fresh_db):
         orders = fresh_db.list_orders(store_id="STORE-1", status=OrderStatus.ASSIGNED)
@@ -426,7 +446,7 @@ class TestStoreMetadata:
     def test_get_store_distances_excludes_self(self, fresh_db):
         distances = fresh_db.get_store_distances("STORE-1")
         assert "STORE-1" not in distances
-        assert set(distances) == {"STORE-2", "STORE-3"}
+        assert set(distances) == {"STORE-2", "STORE-3", "STORE-4", "STORE-5"}
 
     def test_get_store_distances_unknown_store_returns_none(self, fresh_db):
         assert fresh_db.get_store_distances("STORE-999") is None
@@ -444,10 +464,10 @@ class TestStoreMetadata:
 
     def test_list_stores_shape_excludes_scoring_internals(self, fresh_db):
         stores = fresh_db.list_stores()
-        assert len(stores) == 3
+        assert len(stores) == 5
         for store in stores:
             assert set(store) == {"store_id", "name"}
 
     def test_list_stores_contains_expected_ids(self, fresh_db):
         ids = {s["store_id"] for s in fresh_db.list_stores()}
-        assert ids == {"STORE-1", "STORE-2", "STORE-3"}
+        assert ids == {"STORE-1", "STORE-2", "STORE-3", "STORE-4", "STORE-5"}

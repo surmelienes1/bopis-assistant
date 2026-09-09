@@ -408,10 +408,27 @@ class TestValidateRecommendationsIntegration:
         result_ids = {r["product_id"] for r in result}
         candidate_ids = {c["product_id"] for c in candidate_list}
         assert result_ids == candidate_ids
-        # Same-brand candidates (Coca-Cola: 1L, Original 1.5L, Sprite
-        # 1.5L) must all outrank the different-brand Pepsi Max.
+        # Same-brand candidates (Coca-Cola: Zero 1L, Original 1.5L,
+        # Sprite 1.5L, Fanta Orange 1.5L) must all outrank the
+        # different-brand ones (Pepsi Max, 7Up, Pepsi Regular) -- the
+        # seed catalog now has three different-brand sodas in this
+        # price band, not just Pepsi Max, so we assert the brand-tier
+        # boundary itself rather than pinning one candidate to the
+        # very last slot.
         ranked_ids = [r["product_id"] for r in result]
-        assert ranked_ids.index("SKU-PEPSI-MAX-150") == len(ranked_ids) - 1
+        same_brand_ids = {
+            "SKU-COKE-ZERO-100",
+            "SKU-COKE-ORIG-150",
+            "SKU-SPRITE-150",
+            "SKU-FANTA-ORANGE-150",
+        }
+        different_brand_ids = {"SKU-PEPSI-MAX-150", "SKU-7UP-150", "SKU-PEPSI-REG-150"}
+        assert same_brand_ids | different_brand_ids == set(ranked_ids)
+        last_same_brand_index = max(ranked_ids.index(pid) for pid in same_brand_ids)
+        first_different_brand_index = min(
+            ranked_ids.index(pid) for pid in different_brand_ids
+        )
+        assert last_same_brand_index < first_different_brand_index
 
     def test_hallucinated_id_against_real_candidates_falls_back(self, fresh_db):
         from backend import candidates as candidates_module
