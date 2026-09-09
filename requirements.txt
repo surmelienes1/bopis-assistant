@@ -25,5 +25,12 @@ openai
 ai-core-sdk
 generative-ai-hub-sdk
 
-# smoke_test.py's HTTP calls against the running server.
-requests
+
+# Test-only dependencies for the BOPIS prototype's test suite.
+# Install alongside the app's own runtime requirements
+# (fastapi, uvicorn, pydantic, openai, python-dotenv).
+
+pytest>=7.4
+pytest-cov>=4.1
+httpx>=0.24        # required by fastapi.testclient.TestClient
+requests>=2.31      # only if you also run smoke_test.py separately
