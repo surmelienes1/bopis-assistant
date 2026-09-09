@@ -127,6 +127,13 @@ def accept_substitution(
     associate identity requires real authentication infrastructure this
     prototype doesn't have at all, whereas AI-involvement is ordinary
     per-call information a caller can simply pass once it exists.
+    As of the frontend rewrite, api.py DOES pass this through: `True`
+    when the accepted product_id came from the .../unavailable
+    recommendation flow, `False` when an associate picked the
+    originally-ordered product_id directly (see api.py's
+    SubstitutionRequest). Still optional here, and still just recorded
+    verbatim on the audit event -- this function does not branch on
+    its value for anything else.
 
     Idempotency: if `idempotency_key` was already processed, the exact
     stored result is returned unchanged and NOTHING below this check
@@ -255,8 +262,23 @@ def _execute_substitution(
         # recommendation, not a hidden second attempt on their behalf.
         return _conflict("Replacement inventory changed or is no longer available.")
 
+    # PICKED vs SUBSTITUTED (design doc §8 / models.py's OrderItemStatus)
+    # is decided here, once, by comparing the accepted product_id
+    # against the line's originally-ordered product_id -- not by
+    # trusting the caller's `ai_involved` hint, which only says
+    # whether a recommendation flow was involved, not whether the
+    # associate ultimately accepted a genuinely different product.
+    # `substituted_product_id` is likewise only set when it's true:
+    # db.update_order_item_status() treats a None argument as "leave
+    # this field alone" (see that function's docstring), so a plain
+    # pick-as-ordered correctly leaves the field unset rather than
+    # recording the original product as if it were a substitute.
+    is_substitution = product_id != item.product_id
     applied = db.update_order_item_status(
-        order_id, item_id, status=OrderItemStatus.PICKED, substituted_product_id=product_id
+        order_id,
+        item_id,
+        status=OrderItemStatus.SUBSTITUTED if is_substitution else OrderItemStatus.PICKED,
+        substituted_product_id=product_id if is_substitution else None,
     )
     if not applied:
         # Should be impossible: we just confirmed this exact order/item

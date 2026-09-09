@@ -2,797 +2,1496 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E7C63">
 <title>BOPIS Associate Assistant</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230f766e'/><path d='M9 13h14l-1.4 11.2a2 2 0 0 1-2 1.8H12.4a2 2 0 0 1-2-1.8L9 13z' fill='%23ffffff'/><path d='M12 13v-2a4 4 0 0 1 8 0v2' stroke='%23ffffff' stroke-width='1.8' fill='none'/></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230E7C63'/><path d='M9 13h14l-1.4 11.2a2 2 0 0 1-2 1.8H12.4a2 2 0 0 1-2-1.8L9 13z' fill='%23fff'/><path d='M12 13v-2a4 4 0 0 1 8 0v2' stroke='%23fff' stroke-width='1.8' fill='none'/></svg>">
 <style>
+  /*
+   * Design notes (kept here rather than in a separate doc, matching this
+   * project's habit of explaining its own decisions inline):
+   *
+   * - System UI font stack, deliberately: this runs on store-issued
+   *   handheld/webview hardware with no guaranteed webfont fetch, and an
+   *   associate under a pickup-deadline clock needs the fastest possible
+   *   first paint, not a display face. Distinction instead comes from a
+   *   disciplined type scale, tight tracking on headings, and monospace
+   *   reserved for things that are genuinely data (order ids, SKUs) --
+   *   never for prose.
+   * - Palette ties to the subject (grocery/BOPIS) with a cool paper
+   *   background and a produce-adjacent teal accent, rather than a
+   *   generic SaaS grey-and-blue kit. Four semantic colors only
+   *   (success/warning/danger + the teal accent) so status coding stays
+   *   legible at a glance.
+   * - Elevation is purposeful, not uniform: the order summary and
+   *   product/rec cards are genuinely elevated (tappable, decision-
+   *   making surfaces); the item list itself reads as a flat, bordered
+   *   list, like a native picking list, not a stack of identical cards.
+   * - One motion moment per interaction (a panel opening, a toast
+   *   arriving) -- no roaming hover/entrance animation.
+   */
   :root {
-    --bg: #f5f6f8;
-    --panel: #ffffff;
-    --border: #e2e4e9;
-    --text: #1a1b1f;
-    --muted: #6b6f76;
-    --accent: #0f766e;
-    --accent-hover: #0b5c56;
+    --bg: #F3F6F5;
+    --panel: #FFFFFF;
+    --ink: #12211D;
+    --muted: #5B6B66;
+    --muted-2: #8A968F;
+    --border: #DEE7E2;
+    --border-strong: #C7D3CD;
 
-    --success-bg: #e7f6ec; --success-text: #1e6b39; --success-border: #a9dfba;
-    --warning-bg: #fef3e2; --warning-text: #92450e; --warning-border: #f7cd8f;
-    --danger-bg:  #fdecea; --danger-text:  #a3231b; --danger-border:  #f3b7b0;
-    --neutral-bg: #eef1f4; --neutral-text: #454b52; --neutral-border: #d7dce1;
+    --accent: #0E7C63;
+    --accent-hover: #0B6250;
+    --accent-soft-bg: #E3F3EE;
+    --accent-soft-text: #0B6250;
 
-    --shadow-sm: 0 1px 2px rgba(20, 23, 33, 0.05);
-    --shadow-md: 0 2px 10px rgba(20, 23, 33, 0.08);
+    --success-bg: #E6F5EA; --success-text: #1E7A46; --success-border: #B9E3C5;
+    --warning-bg: #FDF1DE; --warning-text: #A15D0A; --warning-border: #F3D6A0;
+    --danger-bg:  #FBEAE8; --danger-text:  #B23B2E; --danger-border: #F0C2BB;
+    --neutral-bg: #EEF2F0; --neutral-text: #48534E; --neutral-border: #D9E1DC;
+
+    --radius-lg: 18px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+
+    --shadow-card: 0 1px 3px rgba(18,33,29,0.08), 0 1px 2px rgba(18,33,29,0.05);
+    --shadow-modal: 0 -6px 24px rgba(18,33,29,0.18);
   }
+
   * { box-sizing: border-box; }
   html, body {
     margin: 0;
-    min-height: 100%;
+    height: 100%;
     background: var(--bg);
-    color: var(--text);
+    color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  .mono {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: 0.93em;
+  button { font: inherit; color: inherit; background: none; border: none; padding: 0; cursor: pointer; text-align: inherit; }
+  select, input {
+    font: inherit; color: inherit; background: var(--panel);
+    border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+    padding: 9px 10px; min-height: 40px;
+  }
+  select:focus-visible, input:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  p { margin: 0; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
   }
 
-  /* ---- shell ---------------------------------------------------- */
-  .topbar {
+  /* ---- app shell ---------------------------------------------------- */
+  .app-shell {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100dvh;
+    min-height: 100vh;
+    background: var(--bg);
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 22px;
+    flex-direction: column;
+    position: relative;
+  }
+  @media (min-width: 521px) {
+    .app-shell { box-shadow: 0 0 0 1px var(--border), 0 12px 40px rgba(18,33,29,0.12); min-height: 92vh; margin-top: 4vh; border-radius: 22px; overflow: hidden; }
+  }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
     background: var(--panel);
     border-bottom: 1px solid var(--border);
   }
-  .brand { display: flex; align-items: center; gap: 10px; }
+  .topbar-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; gap: 10px; min-height: 56px;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .topbar-title { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .brand-badge {
-    width: 32px; height: 32px; flex-shrink: 0; border-radius: 8px;
+    width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px;
     background: var(--accent); color: #fff;
     display: flex; align-items: center; justify-content: center;
-    box-shadow: var(--shadow-sm);
   }
-  .brand h1 { font-size: 15px; margin: 0; font-weight: 700; letter-spacing: -0.01em; }
-  .brand .sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .icon-btn {
+    width: 36px; height: 36px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); flex-shrink: 0;
+  }
+  .icon-btn:hover:not(:disabled) { background: var(--neutral-bg); color: var(--ink); }
+  .icon-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .icon.spin { animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-  .page {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 22px 20px 60px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 14px calc(24px + env(safe-area-inset-bottom, 0px));
+    display: flex; flex-direction: column; gap: 12px;
   }
 
+  .bottomnav {
+    position: sticky; bottom: 0; z-index: 20;
+    display: flex; background: var(--panel);
+    border-top: 1px solid var(--border);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .navtab {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 9px 4px 8px; color: var(--muted-2); font-size: 11px; font-weight: 600;
+  }
+  .navtab.is-active { color: var(--accent); }
+  .navtab .icon { width: 21px; height: 21px; }
+
+  /* ---- icons ---------------------------------------------------------- */
+  .icon { width: 18px; height: 18px; flex-shrink: 0; }
+  .btn-icon { width: 16px; height: 16px; }
+
+  /* ---- generic panels / sections ------------------------------------- */
   .panel {
     background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 18px;
-    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    box-shadow: var(--shadow-card);
   }
-  .panel-title {
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--muted);
-    margin: 0 0 12px 0;
+  .section-title {
+    font-size: 14px; font-weight: 700; margin: 0 0 10px 0;
+    display: flex; align-items: center; gap: 8px;
   }
+  .section-count {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    background: var(--neutral-bg); border-radius: 999px; padding: 1px 8px;
+  }
+  .muted-line { color: var(--muted); font-size: 13px; line-height: 1.5; }
 
-  /* ---- order summary --------------------------------------------- */
-  .order-summary-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .order-id { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
-  .order-meta { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+  /* ---- filter row ------------------------------------------------------ */
+  .filter-row { display: flex; gap: 8px; }
+  .filter-row select { flex: 1; min-width: 0; }
 
-  /* ---- badges ------------------------------------------------------ */
+  /* ---- badges ----------------------------------------------------------- */
   .badge {
-    display: inline-block;
-    padding: 2px 9px;
-    border-radius: 999px;
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    border: 1px solid transparent;
-    white-space: nowrap;
+    display: inline-block; padding: 3px 9px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; border: 1px solid transparent; white-space: nowrap;
   }
   .badge-success { background: var(--success-bg); color: var(--success-text); border-color: var(--success-border); }
   .badge-warning { background: var(--warning-bg); color: var(--warning-text); border-color: var(--warning-border); }
   .badge-danger  { background: var(--danger-bg);  color: var(--danger-text);  border-color: var(--danger-border); }
   .badge-neutral { background: var(--neutral-bg); color: var(--neutral-text); border-color: var(--neutral-border); }
 
-  /* ---- items -------------------------------------------------------- */
-  .items-list { display: flex; flex-direction: column; gap: 10px; }
-  .item-card {
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
-    background: var(--bg);
+  /* ---- order list ------------------------------------------------------- */
+  .order-list { display: flex; flex-direction: column; gap: 10px; }
+  .order-card {
+    display: block; width: 100%;
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 14px 16px; box-shadow: var(--shadow-card);
   }
-  .item-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-  .item-product { font-size: 14px; font-weight: 600; }
-  .item-qty { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
-  .item-sub-note { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
-  .item-actions { margin-top: 10px; }
+  .order-card:hover { border-color: var(--border-strong); }
+  .order-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .order-id { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+
+  .order-meta-row { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12.5px; margin-top: 4px; }
+  .order-meta-row .icon { width: 15px; height: 15px; color: var(--muted-2); }
+  .order-meta-row.warning { color: var(--warning-text); font-weight: 600; }
+  .order-meta-row.warning .icon { color: var(--warning-text); }
+  .order-meta-row.danger { color: var(--danger-text); font-weight: 600; }
+  .order-meta-row.danger .icon { color: var(--danger-text); }
+
+  .progress-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .progress-bar { flex: 1; height: 6px; border-radius: 999px; background: var(--neutral-bg); overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width 200ms ease; }
+  .progress-label { font-size: 11.5px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+
+  /* ---- order summary panel ---------------------------------------------- */
+  .order-summary-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+
+  /* ---- items list --------------------------------------------------------- */
+  .items-list { display: flex; flex-direction: column; }
+  .items-list > * + * { border-top: 1px solid var(--border); }
+
+  .item-card { padding: 12px 0; }
+  .item-card:first-child { padding-top: 0; }
+  .item-card-top { margin-bottom: 4px; }
+  .item-name { font-size: 14px; font-weight: 700; }
+  .item-brand { font-size: 12.5px; color: var(--muted); margin-top: 1px; }
+  .item-meta { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+
+  .item-row-resolved { display: flex; align-items: center; gap: 10px; padding: 10px 0; }
+  .item-row-resolved:first-child { padding-top: 0; }
+  .item-status-icon {
+    width: 28px; height: 28px; border-radius: 999px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .item-status-icon .icon { width: 16px; height: 16px; }
+  .item-status-icon.success { background: var(--success-bg); color: var(--success-text); }
+  .item-status-icon.danger  { background: var(--danger-bg); color: var(--danger-text); }
+  .item-status-icon.warning { background: var(--warning-bg); color: var(--warning-text); }
+  .item-status-icon.neutral { background: var(--neutral-bg); color: var(--neutral-text); }
+  .item-row-main { min-width: 0; }
+  .item-row-main .item-name { font-size: 13.5px; }
+  .item-note { font-size: 12px; color: var(--muted); margin-top: 1px; }
 
   /* ---- buttons -------------------------------------------------------- */
   .btn {
-    font-family: inherit;
-    font-size: 13.5px;
-    font-weight: 600;
-    padding: 8px 14px;
-    border-radius: 7px;
-    border: 1px solid transparent;
-    cursor: pointer;
+    font-size: 13.5px; font-weight: 700; padding: 10px 14px; border-radius: var(--radius-md);
+    border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
     transition: background 120ms ease, opacity 120ms ease, transform 80ms ease;
   }
   .btn:active:not(:disabled) { transform: scale(0.98); }
   .btn:disabled { opacity: 0.55; cursor: not-allowed; }
-  .btn-sm { font-size: 12.5px; padding: 6px 11px; }
+  .btn-sm { font-size: 12.5px; padding: 7px 12px; }
+  .btn-full { width: 100%; }
   .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .btn-primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
-  .btn-secondary { background: var(--panel); border-color: var(--border); color: var(--text); }
+  .btn-secondary { background: var(--panel); border-color: var(--border-strong); color: var(--ink); }
   .btn-secondary:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
   .btn-tertiary { background: transparent; border-color: transparent; color: var(--muted); }
-  .btn-tertiary:hover:not(:disabled) { color: var(--text); background: var(--neutral-bg); }
+  .btn-tertiary:hover:not(:disabled) { color: var(--ink); background: var(--neutral-bg); }
   .btn-error-outline { background: #fff; border-color: var(--danger-border); color: var(--danger-text); }
   .btn-error-outline:hover:not(:disabled) { background: var(--danger-bg); }
 
+  .item-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .item-actions .btn { flex: 1; }
+
+  .chip-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    background: var(--neutral-bg); border: 1px solid var(--neutral-border);
+    border-radius: 999px; padding: 6px 11px;
+  }
+  .chip-btn:hover { color: var(--ink); border-color: var(--border-strong); }
+  .chip-btn .icon { width: 14px; height: 14px; }
+  .item-tools { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
   /* ---- banners / inline errors ------------------------------------------ */
   .banner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 13.5px;
-    border: 1px solid transparent;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; border: 1px solid transparent;
   }
   .banner-error   { background: var(--danger-bg);  color: var(--danger-text);  border-color: var(--danger-border); }
   .banner-warning { background: var(--warning-bg); color: var(--warning-text); border-color: var(--warning-border); }
   .banner-success { background: var(--success-bg); color: var(--success-text); border-color: var(--success-border); }
+  .banner-success .icon { width: 16px; height: 16px; }
 
   .inline-error {
-    margin-top: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    font-size: 12.5px;
-    color: var(--danger-text);
-    background: var(--danger-bg);
-    border: 1px solid var(--danger-border);
-    border-radius: 7px;
-    padding: 8px 10px;
+    margin-top: 8px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    font-size: 12.5px; color: var(--danger-text); background: var(--danger-bg);
+    border: 1px solid var(--danger-border); border-radius: var(--radius-sm); padding: 9px 10px;
   }
   .complete-error { margin-top: 12px; flex-direction: column; align-items: flex-start; }
-  .open-items-list { margin: 4px 0 2px 0; padding-left: 18px; }
+  .open-items-list { margin: 4px 0 0 0; padding-left: 18px; }
   .open-items-list li { margin: 2px 0; }
 
   /* ---- recommendations ---------------------------------------------------- */
-  .recommendations { margin-top: 10px; }
-  .rec-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 10px;
-  }
+  .recommend-panel { margin-top: 10px; }
+  .recommend-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+  .recommend-title { font-size: 13.5px; font-weight: 700; }
+  .recommend-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+  .rec-list { display: flex; flex-direction: column; gap: 8px; }
   .rec-card {
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 11px 12px;
-    background: var(--panel);
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    padding: 12px; background: var(--bg);
   }
-  .rec-card-unavailable { opacity: 0.6; }
-  .rec-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .rec-product-id { font-size: 13px; font-weight: 700; }
+  .rec-card.is-gone { opacity: 0.6; }
+  .rec-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 700; border-radius: 999px; padding: 2px 8px; }
+  .chip-ai { background: var(--accent-soft-bg); color: var(--accent-soft-text); }
+  .chip-icon { width: 11px; height: 11px; }
+  .rec-price { font-size: 12.5px; font-weight: 700; color: var(--muted); }
+  .rec-name { font-size: 13.5px; font-weight: 700; }
+  .rec-brand { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .score-meter { height: 5px; border-radius: 999px; background: var(--neutral-bg); overflow: hidden; margin: 7px 0; }
+  .score-meter-fill { height: 100%; background: var(--accent); border-radius: 999px; }
+  .rec-reason { font-size: 12px; color: var(--muted); line-height: 1.4; }
+  .rec-actions { display: flex; gap: 8px; margin-top: 9px; }
+  .rec-gone { font-size: 11.5px; font-weight: 700; color: var(--danger-text); margin-top: 6px; }
+  .empty-recs { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+
+  /* ---- nearby-store panel --------------------------------------------------- */
+  .nearby-panel { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .nearby-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 11px; background: var(--panel);
+  }
+  .nearby-store { font-size: 13px; font-weight: 700; }
+  .nearby-meta { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
   .score-chip {
-    font-size: 10.5px;
-    color: var(--muted);
-    background: var(--neutral-bg);
-    border: 1px solid var(--neutral-border);
-    border-radius: 999px;
-    padding: 1px 7px;
-    flex-shrink: 0;
-  }
-  .rec-reason { font-size: 12.5px; color: var(--muted); line-height: 1.4; }
-  .rec-card-actions { display: flex; gap: 8px; margin-top: 2px; }
-  .rec-unavailable-note { font-size: 12px; font-weight: 600; color: var(--danger-text); }
-  .empty-recs {
-    font-size: 13px;
-    color: var(--muted);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
+    font-size: 10.5px; font-weight: 700; color: var(--muted); background: var(--neutral-bg);
+    border: 1px solid var(--neutral-border); border-radius: 999px; padding: 2px 8px; flex-shrink: 0;
   }
 
-  .complete-section { display: flex; flex-direction: column; align-items: flex-start; }
-  .empty-state { text-align: center; color: var(--muted); padding: 60px 12px; font-size: 13.5px; }
+  /* ---- tools view -------------------------------------------------------- */
+  .search-field { position: relative; display: flex; align-items: center; }
+  .search-field .icon { position: absolute; left: 11px; color: var(--muted-2); }
+  .search-field input { width: 100%; padding-left: 34px; }
+  .tool-product-list { display: flex; flex-direction: column; margin-top: 10px; }
+  .tool-product-list > * + * { border-top: 1px solid var(--border); }
+  .tool-product-row { padding: 10px 0; }
+  .tool-product-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+  /* ---- activity view ------------------------------------------------------- */
+  .activity-list { display: flex; flex-direction: column; }
+  .activity-list > * + * { border-top: 1px solid var(--border); }
+  .activity-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; }
+  .activity-row:first-child { padding-top: 0; }
+  .activity-text { font-size: 13px; line-height: 1.4; }
+  .activity-time { font-size: 11.5px; color: var(--muted-2); margin-top: 2px; }
+
+  /* ---- complete section --------------------------------------------------- */
+  .complete-section { display: flex; flex-direction: column; gap: 8px; }
+
+  /* ---- empty / skeleton states ------------------------------------------- */
+  .empty-state { text-align: center; color: var(--muted); padding: 48px 16px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .empty-icon { width: 40px; height: 40px; color: var(--muted-2); }
+  .empty-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+  .empty-sub { font-size: 12.5px; max-width: 260px; }
+
+  .skeleton-list { display: flex; flex-direction: column; gap: 10px; }
+  .skeleton-card {
+    height: 96px; border-radius: var(--radius-lg); background: var(--panel); border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .skeleton-card.tall { height: 140px; }
+  .skeleton-card::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(18,33,29,0.05), transparent);
+    animation: shimmer 1.3s infinite;
+  }
+  @keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+
+  /* ---- toast ---------------------------------------------------------- */
+  .toast {
+    position: fixed; left: 50%; bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%); z-index: 60;
+    background: var(--ink); color: #fff; font-size: 13px; font-weight: 600;
+    padding: 10px 16px; border-radius: 999px; box-shadow: 0 6px 20px rgba(18,33,29,0.25);
+    max-width: calc(100% - 40px); text-align: center;
+    animation: toast-in 160ms ease;
+  }
+  @keyframes toast-in { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+  /* ---- modal ------------------------------------------------------------ */
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 50;
+    background: rgba(18,33,29,0.42);
+    display: flex; align-items: flex-end; justify-content: center;
+  }
+  .modal-sheet {
+    width: 100%; max-width: 480px; background: var(--panel);
+    border-radius: 20px 20px 0 0; padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+    box-shadow: var(--shadow-modal);
+    animation: sheet-up 180ms ease;
+  }
+  @keyframes sheet-up { from { transform: translateY(16px); opacity: 0.6; } to { transform: translateY(0); opacity: 1; } }
+  .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+  .modal-title { font-size: 15px; font-weight: 700; }
+  .modal-sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .modal-status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .status-chip {
+    display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: var(--radius-md);
+    border: 1px solid var(--border-strong); font-size: 13px; font-weight: 600; color: var(--ink);
+  }
+  .status-chip .icon { color: var(--muted); }
+  .status-chip.is-selected { background: var(--accent-soft-bg); border-color: var(--accent); color: var(--accent-soft-text); }
+  .status-chip.is-selected .icon { color: var(--accent-soft-text); }
+  .modal-submit { margin-top: 4px; }
 </style>
 </head>
 <body>
-<header class="topbar">
-  <div class="brand">
-    <div class="brand-badge" aria-hidden="true">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-        <path d="M5 8h14l-1.1 9.6A2 2 0 0 1 15.9 19H8.1a2 2 0 0 1-2-1.4L5 8z" fill="#fff"/>
-        <path d="M8 8V6a4 4 0 0 1 8 0v2" stroke="#fff" stroke-width="1.6" fill="none"/>
-      </svg>
-    </div>
-    <div>
-      <h1>BOPIS Associate Assistant</h1>
-      <div class="sub">Pickup fulfillment &amp; substitutions</div>
-    </div>
-  </div>
-  <button class="btn btn-secondary btn-sm" data-action="refresh-order" id="refresh-btn">Refresh order</button>
-</header>
-
-<div class="page" id="app"></div>
+<div class="app-shell">
+  <header class="topbar" id="topbar"></header>
+  <main class="main" id="app"></main>
+  <nav class="bottomnav" id="bottomnav"></nav>
+</div>
+<div id="overlay"></div>
 
 <script>
-/*
- * Thin vanilla-JS view over the BOPIS backend. This file renders state and
- * sends associate actions to the API -- it never ranks, filters, scores, or
- * decides substitution/completion outcomes itself (see api.py's own
- * "architecture rules" section, which this file mirrors on the client side).
- * After every mutation the order is re-fetched from the backend rather than
- * hand-patched locally, so the UI never drifts from server-side truth.
- *
- * Two contract notes worth calling out, since they diverge from what a
- * naive reading of the brief might assume:
- *
- *  1. A validated recommendation (POST .../unavailable) is exactly
- *     {product_id, score, reason} -- see ranking_validation.py's
- *     _validate_single_recommendation() / _fallback_rank(). It does NOT
- *     carry name/brand/size/price, even though the internal candidate list
- *     does before validation strips it down. This UI only renders what's
- *     actually in that response.
- *
- *  2. The idempotency key for an "Accept" is generated once per logical
- *     acceptance (one product, one attempt-that-may-be-retried) and reused
- *     across retries of a request that may not have completed (network
- *     error / unexpected failure). A 409 conflict is a *terminal*,
- *     already-cached outcome for that key (transactions.py stores conflict
- *     results under the idempotency key too), so a 409 clears the stored
- *     key -- a further explicit Accept click is a new logical attempt and
- *     earns a fresh key, rather than replaying the same cached conflict
- *     forever.
- *
- *  3. A zero-length recommendations array is a valid, terminal answer from
- *     candidate retrieval (see candidates.py's hard filters) -- re-running
- *     it can't produce a different result, so this UI does not offer "Try
- *     again" for that case. It offers "Remove item" instead, which is a
- *     distinct, explicit associate action (POST .../resolve-unavailable)
- *     that this file never triggers automatically just because a
- *     recommendations list came back empty.
- */
+"use strict";
 
-const ORDER_ID = "ORD-1001";
-// UNAVAILABLE counts as resolved here too, mirroring models.py's
-// RESOLVED_ITEM_STATUSES: once an associate explicitly removes a line
-// (POST .../resolve-unavailable), it's done -- no action panel, and it
-// no longer blocks order completion.
-const RESOLVED_STATUSES = new Set(["PICKED", "SUBSTITUTED", "UNAVAILABLE"]);
+/* ======================================================================
+ * Thin vanilla-JS view over the BOPIS backend. Like the file it replaces,
+ * this layer renders state and sends associate actions to the API -- it
+ * never ranks, filters, scores, or decides substitution/completion
+ * outcomes itself (see api.py's "architecture rules"). Every mutation is
+ * followed by a re-fetch from the backend rather than a hand-patched
+ * local edit, so the UI never drifts from server-side truth.
+ *
+ * Contract notes carried over from the previous frontend, still true:
+ *  1. A validated recommendation is {product_id, score, reason} plus
+ *     api.py's read-only display enrichment (name, brand, price) -- see
+ *     ranking_validation.py and api.py's report_item_unavailable().
+ *  2. An "Accept"/"Mark Picked" idempotency key is generated once per
+ *     logical acceptance and reused across retries of an attempt that
+ *     may not have completed; a 409 is a terminal, cached outcome for
+ *     that key, so it clears the stored key rather than replaying the
+ *     same cached conflict forever.
+ *  3. A zero-length recommendations array is a valid, terminal answer
+ *     (see candidates.py's hard filters) -- this UI never auto-retries
+ *     it, only offers an explicit "Remove item".
+ *
+ * New in this rewrite: the app is no longer hardcoded to one order.
+ * GET /orders backs an order list/picker, GET /products and GET /stores
+ * back a local catalog used everywhere a bare id would otherwise show,
+ * GET /inventory/nearby and POST .../shelf-report are wired in as
+ * first-class associate tools (not just substitution-flow side effects),
+ * and GET /audit-events powers a simple activity feed. "Mark Picked" on
+ * a still-PENDING item reuses POST .../substitution with product_id set
+ * to the item's own product_id -- exactly the "accept this product for
+ * this line" contract that endpoint already exposes -- with
+ * ai_involved:false so the audit trail distinguishes a plain pick from
+ * an accepted AI-assisted substitute (ai_involved:true).
+ * ====================================================================== */
 
-const ITEM_BADGE_CLASS = {
-  PENDING: "badge-neutral",
-  PICKED: "badge-success",
-  SUBSTITUTED: "badge-success",
-  UNAVAILABLE: "badge-danger",
-  SKIPPED: "badge-neutral",
-};
+/* ---- constants ------------------------------------------------------- */
+
+const ORDER_STATUSES = ["CREATED","ASSIGNED","PICKING","PARTIALLY_PICKED","EXCEPTION","READY","COMPLETED","CANCELLED"];
+const RESOLVED_STATUSES = new Set(["PICKED","SUBSTITUTED","UNAVAILABLE"]);
 const ORDER_BADGE_CLASS = {
-  CREATED: "badge-warning",
-  ASSIGNED: "badge-warning",
-  PICKING: "badge-warning",
-  PARTIALLY_PICKED: "badge-warning",
-  EXCEPTION: "badge-danger",
-  READY: "badge-success",
-  COMPLETED: "badge-success",
-  CANCELLED: "badge-neutral",
+  CREATED: "badge-warning", ASSIGNED: "badge-warning", PICKING: "badge-warning",
+  PARTIALLY_PICKED: "badge-warning", EXCEPTION: "badge-danger",
+  READY: "badge-success", COMPLETED: "badge-success", CANCELLED: "badge-neutral",
+};
+const SHELF_STATUS_LABELS = { empty: "Empty", low: "Running low", damaged: "Damaged", misplaced: "Misplaced" };
+const SHELF_STATUS_OPTIONS = [
+  { v: "empty", label: "Empty", icon: "xcircle" },
+  { v: "low", label: "Running low", icon: "alert" },
+  { v: "damaged", label: "Damaged", icon: "flag" },
+  { v: "misplaced", label: "Misplaced", icon: "map" },
+];
+const ACTIVITY_FILTERS = [
+  { v: "", label: "All activity" },
+  { v: "substitution_accepted", label: "Picks & substitutions" },
+  { v: "item_marked_unavailable", label: "Removed items" },
+  { v: "shelf_report", label: "Shelf reports" },
+];
+const EVENT_TYPE_META = {
+  substitution_accepted: { icon: "check", cls: "success" },
+  item_marked_unavailable: { icon: "xcircle", cls: "danger" },
+  shelf_report: { icon: "flag", cls: "warning" },
 };
 
-const app = document.getElementById("app");
+/* ---- icons ------------------------------------------------------------ */
 
-// ---- top-level state --------------------------------------------------
-// Kept intentionally minimal, per the brief: the current order (the only
-// authoritative copy of backend state), a couple of page-level loading/error
-// flags, and one small per-item UI-state object for the report/accept/skip
-// flow. Nothing here is a second source of truth for order/item state.
-let currentOrder = null;
-let orderLoading = true;
-let orderError = null;
+const ICONS = {
+  bag: '<path d="M5 8h14l-1.1 9.6a2 2 0 0 1-2 1.9H8.1a2 2 0 0 1-2-1.9L5 8z"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>',
+  refresh: '<path d="M4 4v6h6"/><path d="M20 20v-6h-6"/><path d="M5.5 9a7 7 0 0 1 12.3-3.2L20 8"/><path d="M18.5 15a7 7 0 0 1-12.3 3.2L4 16"/>',
+  pin: '<path d="M12 21s7-6.7 7-11.5A7 7 0 0 0 5 9.5C5 14.3 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/>',
+  user: '<circle cx="12" cy="8" r="3.3"/><path d="M5 20c1.1-4.1 4-6.2 7-6.2s5.9 2.1 7 6.2"/>',
+  clock: '<circle cx="12" cy="12" r="8.4"/><path d="M12 7.6V12l2.8 1.9"/>',
+  check: '<path d="M5 12.5l4.4 4.4L19 7.5"/>',
+  swap: '<path d="M4 8h13.5M17.5 8L14 4.5"/><path d="M20 16H6.5M6.5 16L10 19.5"/>',
+  xcircle: '<circle cx="12" cy="12" r="8.4"/><path d="M9 9l6 6M15 9l-6 6"/>',
+  alert: '<path d="M12 4.2L21 19.5H3z"/><path d="M12 10v3.6"/><path d="M12 16.4h.01"/>',
+  box: '<path d="M4 8l8-4 8 4-8 4-8-4z"/><path d="M4 8v9l8 4 8-4V8"/><path d="M12 12v9"/>',
+  flag: '<path d="M6 3.5v17"/><path d="M6 4.5h11l-2.6 3.5L17 11.5H6"/>',
+  map: '<path d="M9 4l-5 2v14l5-2 6 2 5-2V4l-5 2-6-2z"/><path d="M9 4v14"/><path d="M15 6v14"/>',
+  search: '<circle cx="10.3" cy="10.3" r="6"/><path d="M20 20l-5.1-5.1"/>',
+  sparkle: '<path d="M12 3.5l1.7 5 5 1.7-5 1.7-1.7 5-1.7-5-5-1.7 5-1.7z" fill="currentColor" stroke="none"/>',
+  close: '<path d="M6 6l12 12"/><path d="M18 6L6 18"/>',
+  tools: '<path d="M4 7.5h6M14 7.5h6"/><path d="M4 12.5h10M18.5 12.5H20"/><path d="M4 17.5h6M14 17.5h6"/><circle cx="12" cy="7.5" r="1.7"/><circle cx="16" cy="12.5" r="1.7"/><circle cx="12" cy="17.5" r="1.7"/>',
+  activity: '<path d="M3 12h4l2-7 4 14 2-7h6"/>',
+};
 
-let completing = false;
-let completeError = null; // { message, openItems }
+function icon(name, cls) {
+  return `<svg class="icon ${cls || ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ""}</svg>`;
+}
 
-const itemState = {}; // item_id -> per-item UI state, lazily created
+/* ---- state -------------------------------------------------------------- */
 
+const state = {
+  view: "orders", // 'orders' | 'order' | 'tools' | 'activity'
+
+  products: [], productsById: {}, stores: [], storesById: {}, catalogError: null,
+
+  orders: [], ordersLoading: true, ordersError: null,
+  ordersFilter: { storeId: "", status: "" },
+
+  selectedOrderId: null, currentOrder: null, orderLoading: false, orderError: null,
+  completing: false, completeError: null, // { message, openItems }
+
+  tools: { storeId: "", search: "", nearbyByProduct: {} },
+  activity: { events: [], loading: false, error: null, filter: "" },
+
+  shelfModal: null, // { productId, storeId, label, status, submitting, error }
+  toast: null, // { message }
+};
+
+const itemState = {};
 function freshItemState() {
   return {
-    recommendations: null,   // null = not fetched yet; [] = fetched, empty
-    loadingUnavailable: false,
-    unavailableError: null,
-    activeAccept: null,      // { productId, idempotencyKey } for the in-flight/last attempt
-    accepting: false,
-    acceptError: null,
-    conflictBanner: null,
-    unavailableProductIds: new Set(), // recs known (via a 409) to be gone
-    resolving: false,   // in-flight POST .../resolve-unavailable
-    resolveError: null,
+    recommendations: null, loadingUnavailable: false, unavailableError: null,
+    activeAccept: null, accepting: false, acceptError: null, conflictBanner: null,
+    unavailableProductIds: new Set(),
+    resolving: false, resolveError: null,
+    nearbyOpen: false, nearbyLoading: false, nearbyError: null, nearbyResults: null,
   };
 }
-
-function getItemState(itemId) {
-  if (!itemState[itemId]) itemState[itemId] = freshItemState();
-  return itemState[itemId];
+function getItemState(id) {
+  if (!itemState[id]) itemState[id] = freshItemState();
+  return itemState[id];
 }
 
-// ---- small formatting helpers ------------------------------------------
+/* ---- format / utility helpers -------------------------------------------- */
 
 function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  }[c]));
+  return String(value).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 }
-
 function formatStatus(status) {
-  return String(status)
-    .toLowerCase()
-    .split("_")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
+  return String(status).toLowerCase().split("_").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 }
-
-function formatQty(qty) {
-  return Number.isInteger(qty) ? String(qty) : Number(qty).toFixed(2);
+function formatQty(q) { return Number.isInteger(q) ? String(q) : Number(q).toFixed(2); }
+function formatMoney(v) { return v == null ? "" : `$${Number(v).toFixed(2)}`; }
+function indexBy(arr, key) { const m = {}; for (const item of arr) m[item[key]] = item; return m; }
+function uuid() {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0, v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
 }
-
-function formatScore(score) {
-  return `match ${Number(score).toFixed(2)}`;
+function productDisplay(productId) {
+  const p = state.productsById[productId];
+  return p ? { name: p.name, brand: p.brand, price: p.price } : { name: productId, brand: "", price: null };
 }
+function badge(text, cls) { return `<span class="badge ${cls}">${escapeHtml(text)}</span>`; }
 
-function formatDate(iso) {
+function deadlineInfo(iso) {
   const d = new Date(iso);
-  return isNaN(d.getTime()) ? String(iso) : d.toLocaleString();
+  if (isNaN(d.getTime())) return { text: String(iso), cls: "", label: "" };
+  const now = new Date();
+  const diffMin = (d - now) / 60000;
+  const sameDay = d.toDateString() === now.toDateString();
+  const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
+  const isTomorrow = d.toDateString() === tomorrow.toDateString();
+  const time = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  let text;
+  if (sameDay) text = `Today, ${time}`;
+  else if (isTomorrow) text = `Tomorrow, ${time}`;
+  else text = d.toLocaleDateString([], { month: "short", day: "numeric" }) + ", " + time;
+
+  let cls = "", label = "";
+  if (diffMin < 0) { cls = "danger"; label = "Overdue"; }
+  else if (diffMin < 60) { cls = "warning"; label = "Due soon"; }
+  return { text, cls, label };
+}
+function formatRelative(iso) {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return String(iso);
+  const now = new Date();
+  const diffSec = Math.round((now - d) / 1000);
+  if (diffSec < 60) return "Just now";
+  if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
+  if (d.toDateString() === now.toDateString()) return `${Math.floor(diffSec / 3600)}h ago`;
+  const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+  if (d.toDateString() === yesterday.toDateString()) return `Yesterday, ${d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+  return d.toLocaleDateString([], { month: "short", day: "numeric" }) + ", " + d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+function orderProgress(order) {
+  const total = order.items.length;
+  const resolved = order.items.filter((i) => RESOLVED_STATUSES.has(i.status)).length;
+  return { resolved, total };
 }
 
-function badge(text, className) {
-  return `<span class="badge ${className}">${escapeHtml(text)}</span>`;
+/* ---- small shared render helpers ----------------------------------------- */
+
+function bannerError(message, retryAction) {
+  return `<div class="banner banner-error"><span>${escapeHtml(message)}</span><button class="btn btn-sm btn-error-outline" data-action="${retryAction}">Retry</button></div>`;
 }
-
-// ---- render ---------------------------------------------------------------
-// One function rebuilds the whole page from state on every change. The app
-// is small and has no continuous text input, so a full re-render per action
-// is simpler and less bug-prone than hand-patching the DOM, and a single
-// delegated click listener (bottom of file) means nothing needs re-binding.
-
-function render() {
-  const refreshBtn = document.getElementById("refresh-btn");
-  refreshBtn.disabled = orderLoading;
-  refreshBtn.textContent = orderLoading && currentOrder ? "Refreshing…" : "Refresh order";
-
-  const parts = [];
-
-  if (orderError) {
-    parts.push(`
-      <div class="banner banner-error">
-        <span>${escapeHtml(orderError)}</span>
-        <button class="btn btn-sm btn-error-outline" data-action="refresh-order">Retry</button>
-      </div>
-    `);
-  }
-
-  if (!currentOrder) {
-    parts.push(`<div class="empty-state">${orderLoading ? "Loading order…" : "No order loaded."}</div>`);
-  } else {
-    parts.push(renderOrder(currentOrder));
-  }
-
-  app.innerHTML = parts.join("");
+function errorInline(message, actionName, itemId) {
+  return `<div class="inline-error"><span>${escapeHtml(message)}</span><button class="btn btn-sm btn-error-outline" data-action="${actionName}" ${itemId ? `data-item-id="${escapeHtml(itemId)}"` : ""}>Retry</button></div>`;
 }
+function emptyState(iconName, title, sub) {
+  return `<div class="empty-state"><div class="empty-icon">${icon(iconName)}</div><div class="empty-title">${escapeHtml(title)}</div><div class="empty-sub">${escapeHtml(sub)}</div></div>`;
+}
+function skeletonList(n) { return `<div class="skeleton-list">${Array.from({ length: n }).map(() => `<div class="skeleton-card"></div>`).join("")}</div>`; }
+function skeletonDetail() { return `<div class="skeleton-list"><div class="skeleton-card tall"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>`; }
 
-function renderOrder(order) {
-  const showComplete = order.status !== "READY" && order.status !== "COMPLETED";
+/* ---- top bar / bottom nav ------------------------------------------------- */
+
+function buildTopbarHtml() {
+  let left = "", title = "", spinning = false;
+  if (state.view === "orders") { title = "Orders"; }
+  else if (state.view === "order") {
+    left = `<button class="icon-btn" data-action="nav" data-view="orders" aria-label="Back to orders">${icon("back")}</button>`;
+    title = state.currentOrder ? state.currentOrder.id : "Order";
+    spinning = state.orderLoading;
+  } else if (state.view === "tools") { title = "Tools"; }
+  else if (state.view === "activity") { title = "Activity"; spinning = state.activity.loading; }
+
   return `
-    <section class="panel">
-      <div class="order-summary-top">
-        <div>
-          <div class="order-id mono">${escapeHtml(order.id)}</div>
-          <div class="order-meta">Store ${escapeHtml(order.store_id)} &middot; Customer ${escapeHtml(order.customer_id)}</div>
-          <div class="order-meta">Pickup by ${escapeHtml(formatDate(order.pickup_deadline))}</div>
-        </div>
-        ${badge(formatStatus(order.status), ORDER_BADGE_CLASS[order.status] || "badge-neutral")}
+    <div class="topbar-inner">
+      <div class="topbar-left">
+        ${left || `<div class="brand-badge" aria-hidden="true">${icon("bag")}</div>`}
+        <div class="topbar-title">${escapeHtml(title)}</div>
       </div>
-    </section>
+      <button class="icon-btn" data-action="refresh" aria-label="Refresh" ${spinning ? "disabled" : ""}>
+        ${icon("refresh", spinning ? "spin" : "")}
+      </button>
+    </div>`;
+}
 
-    <section class="panel">
-      <h2 class="panel-title">Items</h2>
-      <div class="items-list">
-        ${order.items.map(renderItem).join("")}
-      </div>
-    </section>
+function buildBottomNavHtml() {
+  const tabs = [
+    { id: "orders", label: "Orders", icon: "box" },
+    { id: "tools", label: "Tools", icon: "tools" },
+    { id: "activity", label: "Activity", icon: "activity" },
+  ];
+  return tabs.map((t) => {
+    const active = state.view === t.id || (state.view === "order" && t.id === "orders");
+    return `<button class="navtab ${active ? "is-active" : ""}" data-action="nav" data-view="${t.id}">${icon(t.icon)}<span>${t.label}</span></button>`;
+  }).join("");
+}
 
-    ${order.status === "READY" ? `<div class="banner banner-success">Order is ready for pickup.</div>` : ""}
-    ${showComplete ? renderCompleteSection() : ""}
+/* ---- ORDERS view ----------------------------------------------------------- */
+
+function buildOrdersView() {
+  const storeOptions = [`<option value="">All stores</option>`]
+    .concat(state.stores.map((s) => `<option value="${escapeHtml(s.store_id)}" ${state.ordersFilter.storeId === s.store_id ? "selected" : ""}>${escapeHtml(s.name)}</option>`))
+    .join("");
+  const statusOptions = [`<option value="">All statuses</option>`]
+    .concat(ORDER_STATUSES.map((s) => `<option value="${s}" ${state.ordersFilter.status === s ? "selected" : ""}>${formatStatus(s)}</option>`))
+    .join("");
+
+  let body;
+  if (state.ordersError) {
+    body = bannerError(state.ordersError, "refresh-orders");
+  } else if (state.ordersLoading && state.orders.length === 0) {
+    body = skeletonList(3);
+  } else if (state.orders.length === 0) {
+    body = emptyState("box", "No orders match these filters", "Try a different store or status.");
+  } else {
+    const sorted = [...state.orders].sort((a, b) => new Date(a.pickup_deadline) - new Date(b.pickup_deadline));
+    body = `<div class="order-list">${sorted.map(buildOrderCard).join("")}</div>`;
+  }
+
+  return `
+    ${state.catalogError ? `<div class="banner banner-warning"><span>${escapeHtml(state.catalogError)}</span><button class="btn btn-sm btn-error-outline" data-action="retry-catalog">Retry</button></div>` : ""}
+    <div class="filter-row">
+      <select data-role="orders-store-filter">${storeOptions}</select>
+      <select data-role="orders-status-filter">${statusOptions}</select>
+    </div>
+    ${body}
   `;
 }
 
-function renderItem(item) {
-  const resolved = RESOLVED_STATUSES.has(item.status);
+function buildOrderCard(order) {
+  const store = state.storesById[order.store_id];
+  const storeName = store ? store.name : order.store_id;
+  const dl = deadlineInfo(order.pickup_deadline);
+  const prog = orderProgress(order);
+  const pct = prog.total ? Math.round((prog.resolved / prog.total) * 100) : 0;
+  return `
+    <button class="order-card" data-action="select-order" data-order-id="${escapeHtml(order.id)}">
+      <div class="order-card-top">
+        <span class="order-id mono">${escapeHtml(order.id)}</span>
+        ${badge(formatStatus(order.status), ORDER_BADGE_CLASS[order.status] || "badge-neutral")}
+      </div>
+      <div class="order-meta-row">${icon("pin")}<span>${escapeHtml(storeName)}</span></div>
+      <div class="order-meta-row">${icon("user")}<span>${escapeHtml(order.customer_id)}</span></div>
+      <div class="order-meta-row ${dl.cls}">${icon("clock")}<span>${escapeHtml(dl.text)}${dl.label ? " · " + dl.label : ""}</span></div>
+      <div class="progress-row">
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <span class="progress-label">${prog.resolved}/${prog.total}</span>
+      </div>
+    </button>`;
+}
+
+async function loadOrders() {
+  state.ordersLoading = true; state.ordersError = null; render();
+  try {
+    const params = new URLSearchParams();
+    if (state.ordersFilter.storeId) params.set("store_id", state.ordersFilter.storeId);
+    if (state.ordersFilter.status) params.set("status", state.ordersFilter.status);
+    const qs = params.toString();
+    const res = await fetch(`/orders${qs ? `?${qs}` : ""}`);
+    if (!res.ok) { state.ordersError = "Couldn't load orders. Please try again."; return; }
+    state.orders = await res.json();
+  } catch (err) {
+    state.ordersError = "Couldn't reach the server. Please try again.";
+  } finally {
+    state.ordersLoading = false; render();
+  }
+}
+
+function selectOrder(orderId) {
+  state.view = "order";
+  state.selectedOrderId = orderId;
+  const cached = state.orders.find((o) => o.id === orderId);
+  state.currentOrder = cached || null;
+  state.orderError = null;
+  state.completeError = null;
+  render();
+  loadOrderDetail(orderId, { silent: !!cached });
+}
+
+async function loadOrderDetail(orderId, opts) {
+  opts = opts || {};
+  state.orderLoading = true;
+  if (!opts.silent) state.orderError = null;
+  render();
+  try {
+    const res = await fetch(`/orders/${encodeURIComponent(orderId)}`);
+    if (!res.ok) {
+      state.orderError = state.currentOrder ? "Couldn't refresh the latest order state." : "Couldn't load this order.";
+      return;
+    }
+    const order = await res.json();
+    state.currentOrder = order;
+    state.orderError = null;
+    const idx = state.orders.findIndex((o) => o.id === order.id);
+    if (idx !== -1) state.orders[idx] = order; else state.orders.push(order);
+  } catch (err) {
+    state.orderError = state.currentOrder ? "Couldn't refresh the latest order state." : "Couldn't load this order.";
+  } finally {
+    state.orderLoading = false; render();
+  }
+}
+
+/* ---- ORDER DETAIL view ------------------------------------------------------ */
+
+function buildOrderDetailView() {
+  if (!state.currentOrder) {
+    return state.orderError ? bannerError(state.orderError, "refresh") : skeletonDetail();
+  }
+  const order = state.currentOrder;
+  const store = state.storesById[order.store_id];
+  const storeName = store ? store.name : order.store_id;
+  const dl = deadlineInfo(order.pickup_deadline);
+  const prog = orderProgress(order);
+  const pct = prog.total ? Math.round((prog.resolved / prog.total) * 100) : 0;
+  const pendingItems = order.items.filter((i) => !RESOLVED_STATUSES.has(i.status));
+  const resolvedItems = order.items.filter((i) => RESOLVED_STATUSES.has(i.status));
+  const showComplete = !["READY", "COMPLETED", "CANCELLED"].includes(order.status);
+
+  return `
+    ${state.orderError ? bannerError(state.orderError, "refresh") : ""}
+    <section class="panel">
+      <div class="order-summary-top">
+        <span class="order-id mono">${escapeHtml(order.id)}</span>
+        ${badge(formatStatus(order.status), ORDER_BADGE_CLASS[order.status] || "badge-neutral")}
+      </div>
+      <div class="order-meta-row">${icon("pin")}<span>${escapeHtml(storeName)}</span></div>
+      <div class="order-meta-row">${icon("user")}<span>${escapeHtml(order.customer_id)}</span></div>
+      <div class="order-meta-row ${dl.cls}">${icon("clock")}<span>${escapeHtml(dl.text)}${dl.label ? " · " + dl.label : ""}</span></div>
+      <div class="progress-row">
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <span class="progress-label">${prog.resolved}/${prog.total} resolved</span>
+      </div>
+    </section>
+
+    ${order.status === "READY" ? `<div class="banner banner-success">${icon("check")}<span>Order is ready for pickup.</span></div>` : ""}
+    ${order.status === "COMPLETED" ? `<div class="banner banner-success">${icon("check")}<span>Order completed.</span></div>` : ""}
+
+    ${pendingItems.length > 0 ? `
+      <section class="panel">
+        <h2 class="section-title">To pick <span class="section-count">${pendingItems.length}</span></h2>
+        <div class="items-list">${pendingItems.map((i) => renderPendingItem(i, order)).join("")}</div>
+      </section>` : ""}
+
+    ${resolvedItems.length > 0 ? `
+      <section class="panel">
+        <h2 class="section-title">Resolved <span class="section-count">${resolvedItems.length}</span></h2>
+        <div class="items-list">${resolvedItems.map(renderResolvedItem).join("")}</div>
+      </section>` : ""}
+
+    ${showComplete ? buildCompleteSection(order, prog) : ""}
+  `;
+}
+
+function renderResolvedItem(item) {
+  const disp = productDisplay(item.product_id);
+  let iconName, cls, note;
+  if (item.status === "PICKED") {
+    iconName = "check"; cls = "success"; note = "Picked as ordered";
+  } else if (item.status === "SUBSTITUTED") {
+    iconName = "swap"; cls = "success";
+    const subDisp = item.substituted_product_id ? productDisplay(item.substituted_product_id) : null;
+    note = subDisp ? `Substituted with ${subDisp.name}` : "Substituted";
+  } else if (item.status === "UNAVAILABLE") {
+    iconName = "xcircle"; cls = "danger"; note = item.exception_reason || "Marked unavailable";
+  } else {
+    iconName = "check"; cls = "neutral"; note = formatStatus(item.status);
+  }
+  return `
+    <div class="item-row-resolved">
+      <span class="item-status-icon ${cls}">${icon(iconName)}</span>
+      <div class="item-row-main">
+        <div class="item-name">${escapeHtml(disp.name)}</div>
+        <div class="item-note">${escapeHtml(note)}</div>
+      </div>
+    </div>`;
+}
+
+function renderPendingItem(item, order) {
+  const disp = productDisplay(item.product_id);
   const st = getItemState(item.id);
   return `
     <div class="item-card">
-      <div class="item-row">
-        <div>
-          <div class="item-product">Product <span class="mono">${escapeHtml(item.product_id)}</span></div>
-          <div class="item-qty">Requested ${formatQty(item.requested_quantity)} &middot; Picked ${formatQty(item.picked_quantity)}</div>
-          ${item.substituted_product_id ? `<div class="item-sub-note">Substituted with <span class="mono">${escapeHtml(item.substituted_product_id)}</span></div>` : ""}
-          ${item.status === "UNAVAILABLE" && item.exception_reason ? `<div class="item-sub-note">${escapeHtml(item.exception_reason)}</div>` : ""}
-        </div>
-        ${badge(formatStatus(item.status), ITEM_BADGE_CLASS[item.status] || "badge-neutral")}
+      <div class="item-card-top">
+        <div class="item-name">${escapeHtml(disp.name)}</div>
+        ${disp.brand ? `<div class="item-brand">${escapeHtml(disp.brand)}</div>` : ""}
+        <div class="item-meta">Qty ${formatQty(item.requested_quantity)}${disp.price != null ? " · " + formatMoney(disp.price) : ""}</div>
       </div>
-      ${resolved ? "" : renderItemAction(item, st)}
+      ${st.conflictBanner ? `<div class="banner banner-warning" style="margin-top:8px;">${escapeHtml(st.conflictBanner)}</div>` : ""}
+      ${st.recommendations === null ? renderInitialActions(item, st) : renderRecommendationsPanel(item, st)}
+      ${renderNearbyToggleAndPanel(item, order, st)}
+    </div>`;
+}
+
+function renderInitialActions(item, st) {
+  const pickBusy = st.accepting && st.activeAccept && st.activeAccept.context === "pick";
+  return `
+    <div class="item-actions">
+      <button class="btn btn-primary" data-action="mark-picked" data-item-id="${item.id}" data-product-id="${item.product_id}" ${st.accepting ? "disabled" : ""}>
+        ${icon("check", "btn-icon")}<span>${pickBusy ? "Marking…" : "Mark Picked"}</span>
+      </button>
+      <button class="btn btn-secondary" data-action="report-unavailable" data-item-id="${item.id}" ${st.loadingUnavailable ? "disabled" : ""}>
+        ${icon("alert", "btn-icon")}<span>${st.loadingUnavailable ? "Finding substitutes…" : "Report Unavailable"}</span>
+      </button>
     </div>
+    ${st.unavailableError ? errorInline(st.unavailableError, "report-unavailable", item.id) : ""}
+    ${st.acceptError ? errorInline(st.acceptError, "retry-accept", item.id) : ""}
   `;
 }
 
-function renderItemAction(item, st) {
-  if (st.recommendations === null) {
-    return `
-      <div class="item-actions">
-        <button class="btn btn-primary btn-sm" data-action="report-unavailable" data-item-id="${escapeHtml(item.id)}" ${st.loadingUnavailable ? "disabled" : ""}>
-          ${st.loadingUnavailable ? "Finding substitutes…" : "Report unavailable"}
-        </button>
-        ${st.unavailableError ? `
-          <div class="inline-error">
-            <span>${escapeHtml(st.unavailableError)}</span>
-            <button class="btn btn-sm btn-error-outline" data-action="report-unavailable" data-item-id="${escapeHtml(item.id)}">Retry</button>
-          </div>` : ""}
-      </div>
-    `;
-  }
-  return renderRecommendations(item, st);
-}
-
-function renderRecommendations(item, st) {
+function renderRecommendationsPanel(item, st) {
   const recs = st.recommendations;
   return `
-    <div class="recommendations">
-      ${st.conflictBanner ? `<div class="banner banner-warning" style="margin-bottom:10px;">${escapeHtml(st.conflictBanner)}</div>` : ""}
-      ${recs.length === 0 ? renderNoSubstitutes(item, st) : `
-        <div class="rec-grid">
-          ${recs.map((r) => renderRecCard(item, r, st)).join("")}
+    <div class="recommend-panel">
+      <div class="recommend-head">
+        <div>
+          <div class="recommend-title">Suggested substitutes</div>
+          <div class="recommend-sub">Ranked by fit for this order.</div>
         </div>
-      `}
-      ${recs.length > 0 && st.acceptError ? `
-        <div class="inline-error">
-          <span>${escapeHtml(st.acceptError)}</span>
-          <button class="btn btn-sm btn-error-outline" data-action="retry-accept" data-item-id="${escapeHtml(item.id)}">Retry</button>
-        </div>` : ""}
-    </div>
-  `;
+        <button class="btn btn-tertiary btn-sm" data-action="cancel-unavailable" data-item-id="${item.id}">Cancel</button>
+      </div>
+      ${recs.length === 0 ? renderNoSubstitutes(item, st) : `<div class="rec-list">${recs.map((r) => renderRecCard(item, r, st)).join("")}</div>`}
+      ${recs.length > 0 && st.acceptError ? errorInline(st.acceptError, "retry-accept", item.id) : ""}
+    </div>`;
 }
 
 function renderNoSubstitutes(item, st) {
-  // Deterministic candidate retrieval already ran (that's how we got
-  // an empty, not null, recommendations list) and re-running it can't
-  // produce a different result -- see candidates.py's hard filters.
-  // So the only forward action is the associate explicitly removing
-  // the line, never an automatic "no recs -> mark unavailable" on
-  // their behalf.
   return `
     <div class="empty-recs">
-      <span>No suitable substitute is available for this item.</span>
-      <button class="btn btn-error-outline btn-sm" data-action="resolve-unavailable" data-item-id="${escapeHtml(item.id)}" ${st.resolving ? "disabled" : ""}>
+      <p class="muted-line">No suitable substitute is available for this item right now.</p>
+      <button class="btn btn-error-outline btn-sm" data-action="remove-item" data-item-id="${item.id}" ${st.resolving ? "disabled" : ""}>
         ${st.resolving ? "Removing…" : "Remove item"}
       </button>
     </div>
-    ${st.resolveError ? `
-      <div class="inline-error">
-        <span>${escapeHtml(st.resolveError)}</span>
-        <button class="btn btn-sm btn-error-outline" data-action="resolve-unavailable" data-item-id="${escapeHtml(item.id)}">Retry</button>
-      </div>` : ""}
-  `;
+    ${st.resolveError ? errorInline(st.resolveError, "remove-item", item.id) : ""}`;
 }
 
 function renderRecCard(item, rec, st) {
-  const isUnavailable = st.unavailableProductIds.has(rec.product_id);
-  const isThisAccepting = st.accepting && st.activeAccept && st.activeAccept.productId === rec.product_id;
-  const disabled = st.accepting || isUnavailable;
+  const unavailable = st.unavailableProductIds.has(rec.product_id);
+  const isAccepting = st.accepting && st.activeAccept && st.activeAccept.productId === rec.product_id && st.activeAccept.context === "substitute";
+  const disabled = st.accepting || unavailable;
+  const name = rec.name || rec.product_id;
+  const pct = Math.round(Math.max(0, Math.min(1, Number(rec.score) || 0)) * 100);
   return `
-    <div class="rec-card ${isUnavailable ? "rec-card-unavailable" : ""}">
-      <div class="rec-card-top">
-        <span class="mono rec-product-id">${escapeHtml(rec.product_id)}</span>
-        <span class="score-chip" title="Recommendation signal, not a probability">${escapeHtml(formatScore(rec.score))}</span>
+    <div class="rec-card ${unavailable ? "is-gone" : ""}">
+      <div class="rec-card-head">
+        <span class="chip chip-ai">${icon("sparkle", "chip-icon")}Suggested</span>
+        ${rec.price != null ? `<span class="rec-price">${formatMoney(rec.price)}</span>` : ""}
       </div>
+      <div class="rec-name">${escapeHtml(name)}</div>
+      ${rec.brand ? `<div class="rec-brand">${escapeHtml(rec.brand)}</div>` : ""}
+      <div class="score-meter" title="Match score ${Number(rec.score).toFixed(2)}"><div class="score-meter-fill" style="width:${pct}%"></div></div>
       <div class="rec-reason">${escapeHtml(rec.reason)}</div>
-      ${isUnavailable ? `<div class="rec-unavailable-note">No longer available</div>` : `
-        <div class="rec-card-actions">
-          <button class="btn btn-primary btn-sm" data-action="accept" data-item-id="${escapeHtml(item.id)}" data-product-id="${escapeHtml(rec.product_id)}" ${disabled ? "disabled" : ""}>
-            ${isThisAccepting ? "Accepting…" : "Accept"}
-          </button>
-          <button class="btn btn-tertiary btn-sm" data-action="skip" data-item-id="${escapeHtml(item.id)}" data-product-id="${escapeHtml(rec.product_id)}" ${st.accepting ? "disabled" : ""}>
-            Skip
-          </button>
-        </div>
-      `}
-    </div>
-  `;
+      ${unavailable ? `<div class="rec-gone">No longer available</div>` : `
+        <div class="rec-actions">
+          <button class="btn btn-primary btn-sm" data-action="accept-substitute" data-item-id="${item.id}" data-product-id="${rec.product_id}" ${disabled ? "disabled" : ""}>${isAccepting ? "Accepting…" : "Accept"}</button>
+          <button class="btn btn-tertiary btn-sm" data-action="skip-substitute" data-item-id="${item.id}" data-product-id="${rec.product_id}" ${st.accepting ? "disabled" : ""}>Skip</button>
+        </div>`}
+    </div>`;
 }
 
-function renderCompleteSection() {
+function renderNearbyToggleAndPanel(item, order, st) {
+  return `
+    <div class="item-tools">
+      <button class="chip-btn" data-action="toggle-nearby" data-item-id="${item.id}" data-product-id="${item.product_id}" data-store-id="${order.store_id}">
+        ${icon("map")}<span>${st.nearbyOpen ? "Hide nearby stores" : "Check nearby stores"}</span>
+      </button>
+      <button class="chip-btn" data-action="open-shelf-modal" data-product-id="${item.product_id}" data-store-id="${order.store_id}" data-product-label="${escapeHtml(productDisplay(item.product_id).name)}">
+        ${icon("flag")}<span>Flag shelf issue</span>
+      </button>
+    </div>
+    ${st.nearbyOpen ? renderNearbyPanel(item, order, st) : ""}`;
+}
+
+function renderNearbyPanel(item, order, st) {
+  if (st.nearbyLoading) return `<div class="nearby-panel"><p class="muted-line">Checking nearby stores…</p></div>`;
+  if (st.nearbyError) {
+    return `<div class="nearby-panel">
+      <div class="inline-error">
+        <span>${escapeHtml(st.nearbyError)}</span>
+        <button class="btn btn-sm btn-error-outline" data-action="retry-nearby" data-item-id="${item.id}" data-product-id="${item.product_id}" data-store-id="${order.store_id}">Retry</button>
+      </div>
+    </div>`;
+  }
+  const results = st.nearbyResults || [];
+  if (results.length === 0) return `<div class="nearby-panel"><p class="muted-line">No nearby store currently has stock of this item.</p></div>`;
+  return `<div class="nearby-panel">${results.map(renderNearbyRow).join("")}</div>`;
+}
+
+function renderNearbyRow(r) {
+  const store = state.storesById[r.store_id];
+  const name = store ? store.name : r.store_id;
+  return `
+    <div class="nearby-row">
+      <div>
+        <div class="nearby-store">${escapeHtml(name)}</div>
+        <div class="nearby-meta">${r.distance_km.toFixed(1)} km · ${r.available_quantity} in stock</div>
+      </div>
+      <span class="score-chip" title="Inventory confidence ${Math.round(r.inventory_confidence * 100)}%">${Number(r.score).toFixed(2)}</span>
+    </div>`;
+}
+
+function buildCompleteSection(order, prog) {
+  const ready = prog.total > 0 && prog.resolved === prog.total;
   return `
     <section class="panel complete-section">
-      <button class="btn btn-primary" data-action="complete-order" ${completing ? "disabled" : ""}>
-        ${completing ? "Completing…" : "Complete order"}
+      ${!ready ? `<p class="muted-line">${prog.total - prog.resolved} item${prog.total - prog.resolved === 1 ? "" : "s"} still need action before this order can be completed.</p>` : ""}
+      <button class="btn btn-primary btn-full" data-action="complete-order" ${(!ready || state.completing) ? "disabled" : ""}>
+        ${state.completing ? "Completing…" : "Complete order"}
       </button>
-      ${completeError ? renderCompleteError(completeError) : ""}
-    </section>
-  `;
+      ${state.completeError ? buildCompleteError(state.completeError, order) : ""}
+    </section>`;
 }
 
-function renderCompleteError(err) {
+function buildCompleteError(err, order) {
   return `
     <div class="inline-error complete-error">
       <div>${escapeHtml(err.message)}</div>
-      ${err.openItems.length ? `
+      ${err.openItems && err.openItems.length ? `
         <ul class="open-items-list">
-          ${err.openItems.map((oi) => `<li>Item <span class="mono">${escapeHtml(oi.item_id)}</span> &mdash; ${escapeHtml(formatStatus(oi.status))}</li>`).join("")}
-        </ul>
-      ` : ""}
-      <button class="btn btn-sm btn-error-outline" data-action="complete-order">Retry</button>
-    </div>
-  `;
+          ${err.openItems.map((oi) => {
+            const found = order.items.find((i) => i.id === oi.item_id);
+            const label = found ? productDisplay(found.product_id).name : oi.item_id;
+            return `<li>${escapeHtml(label)} — ${escapeHtml(formatStatus(oi.status))}</li>`;
+          }).join("")}
+        </ul>` : ""}
+    </div>`;
 }
 
-// ---- data / actions ---------------------------------------------------
+/* ---- item actions: mark picked / report unavailable / accept / skip / remove --- */
 
-async function loadOrder() {
-  orderLoading = true;
-  orderError = null;
-  render();
-  try {
-    const res = await fetch(`/orders/${ORDER_ID}`);
-    if (!res.ok) {
-      orderError = currentOrder
-        ? "We couldn't refresh the latest order state."
-        : "We couldn't load this order.";
-      return;
-    }
-    currentOrder = await res.json();
-  } catch (err) {
-    orderError = currentOrder
-      ? "We couldn't refresh the latest order state."
-      : "We couldn't load this order.";
-  } finally {
-    orderLoading = false;
-    render();
-  }
-}
-
-async function reportUnavailable(itemId) {
+async function confirmPick(itemId, productId, context) {
   const st = getItemState(itemId);
-  st.loadingUnavailable = true;
-  st.unavailableError = null;
-  st.recommendations = null;
-  st.conflictBanner = null;
-  render();
+  if (!st.activeAccept || st.activeAccept.productId !== productId || st.activeAccept.context !== context) {
+    st.activeAccept = { productId, context, idempotencyKey: uuid() };
+  }
+  st.accepting = true; st.acceptError = null; st.conflictBanner = null; render();
 
   try {
-    const res = await fetch(`/orders/${ORDER_ID}/items/${itemId}/unavailable`, { method: "POST" });
-    if (!res.ok) {
-      st.unavailableError = "Couldn't find substitutes for this item. Please try again.";
-      return;
-    }
-    st.recommendations = await res.json();
-  } catch (err) {
-    st.unavailableError = "Couldn't reach the server. Please try again.";
-  } finally {
-    st.loadingUnavailable = false;
-    render();
-  }
-}
-
-function skipRecommendation(itemId, productId) {
-  const st = getItemState(itemId);
-  if (st.recommendations) {
-    st.recommendations = st.recommendations.filter((r) => r.product_id !== productId);
-  }
-  st.acceptError = null;
-  st.conflictBanner = null;
-  render();
-}
-
-async function acceptSubstitution(itemId, productId) {
-  const st = getItemState(itemId);
-
-  // Generate a fresh idempotency key only for a genuinely new logical
-  // acceptance (a different product, or no attempt in flight yet). A retry
-  // of the SAME attempt (see the "retry-accept" action) reuses the key
-  // already stored on st.activeAccept.
-  if (!st.activeAccept || st.activeAccept.productId !== productId) {
-    st.activeAccept = { productId, idempotencyKey: crypto.randomUUID() };
-  }
-  st.accepting = true;
-  st.acceptError = null;
-  st.conflictBanner = null;
-  render();
-
-  try {
-    const res = await fetch(`/orders/${ORDER_ID}/items/${itemId}/substitution`, {
+    const res = await fetch(`/orders/${encodeURIComponent(state.selectedOrderId)}/items/${encodeURIComponent(itemId)}/substitution`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         product_id: st.activeAccept.productId,
         idempotency_key: st.activeAccept.idempotencyKey,
+        ai_involved: context === "substitute",
       }),
     });
 
     if (res.status === 200) {
-      // Success -- the backend is authoritative, so drop all local
-      // recommendation/accept state for this item and re-fetch the order
-      // rather than hand-editing its status to PICKED here.
       itemState[itemId] = freshItemState();
-      st.accepting = false;
-      await loadOrder();
+      toast(context === "pick" ? "Marked as picked." : "Substitution accepted.");
+      await loadOrderDetail(state.selectedOrderId, { silent: true });
       return;
     }
 
     if (res.status === 409) {
       let reason = "";
-      try {
-        const body = await res.json();
-        reason = body.reason || "";
-      } catch (e) {
-        /* no JSON body -- fall back to the generic message below */
-      }
-      st.unavailableProductIds.add(productId);
-      // A 409 is a terminal, already-cached result for this idempotency
-      // key (see the module comment above) -- clear it so a further
-      // explicit Accept click starts a genuinely new attempt.
+      try { const body = await res.json(); reason = body.reason || ""; } catch (e) { /* no body */ }
+      if (context === "substitute") st.unavailableProductIds.add(productId);
       st.activeAccept = null;
-      st.conflictBanner =
-        "This substitute is no longer available — someone else took the last unit. Refreshing the order...";
-      st.accepting = false;
-      render();
-      await loadOrder();
+      st.conflictBanner = context === "pick"
+        ? (reason || "That item is no longer available here — try Report Unavailable instead.")
+        : "This substitute is no longer available — someone else took the last unit. Refreshing…";
+      st.accepting = false; render();
+      await loadOrderDetail(state.selectedOrderId, { silent: true });
       return;
     }
 
-    st.acceptError = "Something went wrong accepting this substitution. Please try again.";
+    st.acceptError = context === "pick"
+      ? "Couldn't mark this item as picked. Please try again."
+      : "Something went wrong accepting this substitution. Please try again.";
   } catch (err) {
     st.acceptError = "Couldn't reach the server. Please try again.";
   } finally {
-    st.accepting = false;
-    render();
+    st.accepting = false; render();
   }
 }
 
-async function resolveUnavailable(itemId) {
+async function reportUnavailable(itemId) {
   const st = getItemState(itemId);
-  st.resolving = true;
-  st.resolveError = null;
-  st.conflictBanner = null;
-  render();
-
+  st.loadingUnavailable = true; st.unavailableError = null; st.conflictBanner = null; render();
   try {
-    const res = await fetch(`/orders/${ORDER_ID}/items/${itemId}/resolve-unavailable`, {
+    const res = await fetch(`/orders/${encodeURIComponent(state.selectedOrderId)}/items/${encodeURIComponent(itemId)}/unavailable`, { method: "POST" });
+    if (!res.ok) { st.unavailableError = "Couldn't find substitutes for this item. Please try again."; return; }
+    st.recommendations = await res.json();
+  } catch (err) {
+    st.unavailableError = "Couldn't reach the server. Please try again.";
+  } finally {
+    st.loadingUnavailable = false; render();
+  }
+}
+
+function cancelUnavailable(itemId) {
+  const st = getItemState(itemId);
+  st.recommendations = null; st.acceptError = null; st.conflictBanner = null;
+  render();
+}
+
+function skipRecommendation(itemId, productId) {
+  const st = getItemState(itemId);
+  if (st.recommendations) st.recommendations = st.recommendations.filter((r) => r.product_id !== productId);
+  st.acceptError = null; st.conflictBanner = null;
+  render();
+}
+
+async function removeItem(itemId) {
+  const st = getItemState(itemId);
+  st.resolving = true; st.resolveError = null; st.conflictBanner = null; render();
+  try {
+    const res = await fetch(`/orders/${encodeURIComponent(state.selectedOrderId)}/items/${encodeURIComponent(itemId)}/resolve-unavailable`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ resolution: "REMOVE" }),
     });
-
     if (res.status === 200) {
-      // Backend is authoritative -- drop local recommendation state for
-      // this item and re-fetch the order rather than hand-editing its
-      // status to UNAVAILABLE here (same pattern as acceptSubstitution).
       itemState[itemId] = freshItemState();
       st.resolving = false;
-      await loadOrder();
+      toast("Item removed from the order.");
+      await loadOrderDetail(state.selectedOrderId, { silent: true });
       return;
     }
-
     if (res.status === 409) {
-      // Someone/something already resolved this item (e.g. a second
-      // "Remove item" click, or a substitution accepted in another
-      // tab). Not a bug -- refresh so the UI reflects whatever it
-      // actually is now.
       let detail = "";
-      try {
-        const body = await res.json();
-        detail = body.detail || "";
-      } catch (e) {
-        /* no JSON body -- fall back to the generic message below */
-      }
-      st.conflictBanner =
-        detail || "This item was already resolved. Refreshing the order...";
-      st.resolving = false;
-      render();
-      await loadOrder();
+      try { const body = await res.json(); detail = body.detail || ""; } catch (e) { /* no body */ }
+      st.conflictBanner = detail || "This item was already resolved. Refreshing…";
+      st.resolving = false; render();
+      await loadOrderDetail(state.selectedOrderId, { silent: true });
       return;
     }
-
     st.resolveError = "Something went wrong removing this item. Please try again.";
   } catch (err) {
     st.resolveError = "Couldn't reach the server. Please try again.";
   } finally {
-    st.resolving = false;
+    st.resolving = false; render();
+  }
+}
+
+/* ---- nearby-store lookup (item context) ------------------------------------ */
+
+function toggleNearby(itemId, productId, storeId) {
+  const st = getItemState(itemId);
+  st.nearbyOpen = !st.nearbyOpen;
+  if (st.nearbyOpen && st.nearbyResults === null && !st.nearbyLoading) {
+    fetchNearbyForItem(itemId, productId, storeId);
+  } else {
     render();
   }
 }
 
-async function completeOrder() {
-  completing = true;
-  completeError = null;
-  render();
-
+async function fetchNearbyForItem(itemId, productId, storeId) {
+  const st = getItemState(itemId);
+  st.nearbyLoading = true; st.nearbyError = null; render();
   try {
-    const res = await fetch(`/orders/${ORDER_ID}/complete`, { method: "POST" });
+    const res = await fetch(`/inventory/nearby?product_id=${encodeURIComponent(productId)}&store_id=${encodeURIComponent(storeId)}`);
+    if (!res.ok) { st.nearbyError = "Couldn't check nearby stores. Please try again."; }
+    else { const body = await res.json(); st.nearbyResults = body.nearby_stores; }
+  } catch (err) {
+    st.nearbyError = "Couldn't reach the server. Please try again.";
+  } finally {
+    st.nearbyLoading = false; render();
+  }
+}
+
+/* ---- complete order --------------------------------------------------------- */
+
+async function completeOrder() {
+  state.completing = true; state.completeError = null; render();
+  try {
+    const res = await fetch(`/orders/${encodeURIComponent(state.selectedOrderId)}/complete`, { method: "POST" });
     if (res.status === 200) {
-      completing = false;
-      await loadOrder();
+      state.completing = false;
+      toast("Order marked ready for pickup.");
+      await loadOrderDetail(state.selectedOrderId, { silent: true });
       return;
     }
     if (res.status === 400) {
       let body = {};
-      try {
-        body = await res.json();
-      } catch (e) {
-        /* no JSON body -- fall back to the generic message below */
-      }
-      completeError = {
-        message: body.reason || "Order cannot be completed yet.",
-        openItems: Array.isArray(body.open_items) ? body.open_items : [],
-      };
+      try { body = await res.json(); } catch (e) { /* no body */ }
+      state.completeError = { message: body.reason || "Order cannot be completed yet.", openItems: Array.isArray(body.open_items) ? body.open_items : [] };
       return;
     }
-    completeError = { message: "Something went wrong completing this order. Please try again.", openItems: [] };
+    state.completeError = { message: "Something went wrong completing this order. Please try again.", openItems: [] };
   } catch (err) {
-    completeError = { message: "Couldn't reach the server. Please try again.", openItems: [] };
+    state.completeError = { message: "Couldn't reach the server. Please try again.", openItems: [] };
   } finally {
-    completing = false;
+    state.completing = false; render();
+  }
+}
+
+/* ---- TOOLS view (order-independent: nearby lookup + shelf reporting) -------- */
+
+function buildToolsView() {
+  const storeOptions = [`<option value="">Choose a store…</option>`]
+    .concat(state.stores.map((s) => `<option value="${escapeHtml(s.store_id)}" ${state.tools.storeId === s.store_id ? "selected" : ""}>${escapeHtml(s.name)}</option>`))
+    .join("");
+
+  const query = state.tools.search.trim().toLowerCase();
+  const matches = query
+    ? state.products.filter((p) => p.name.toLowerCase().includes(query) || p.brand.toLowerCase().includes(query)).slice(0, 25)
+    : [];
+
+  let searchBody;
+  if (!state.tools.storeId) searchBody = `<p class="muted-line">Select a store above first.</p>`;
+  else if (query === "") searchBody = `<p class="muted-line">Start typing to search the catalog.</p>`;
+  else if (matches.length === 0) searchBody = `<p class="muted-line">No products match "${escapeHtml(state.tools.search)}".</p>`;
+  else searchBody = `<div class="tool-product-list">${matches.map(buildToolsProductRow).join("")}</div>`;
+
+  return `
+    <section class="panel">
+      <h2 class="section-title">Store</h2>
+      <p class="muted-line" style="margin-bottom:10px;">Choose the store you're working from to look up nearby stock or flag a shelf issue.</p>
+      <select data-role="tools-store-select">${storeOptions}</select>
+    </section>
+
+    <section class="panel">
+      <h2 class="section-title">Find a product</h2>
+      <div class="search-field">
+        ${icon("search")}
+        <input id="tools-search-input" type="text" data-role="tools-search" placeholder="Search by name or brand…" value="${escapeHtml(state.tools.search)}" ${state.tools.storeId ? "" : "disabled"} />
+      </div>
+      <div style="margin-top:8px;">${searchBody}</div>
+    </section>
+  `;
+}
+
+function buildToolsProductRow(p) {
+  const nb = state.tools.nearbyByProduct[p.id];
+  return `
+    <div class="tool-product-row">
+      <div class="item-name">${escapeHtml(p.name)}</div>
+      <div class="item-brand">${escapeHtml(p.brand)} · ${formatMoney(p.price)}</div>
+      <div class="tool-product-actions">
+        <button class="chip-btn" data-action="toggle-nearby-tools" data-product-id="${p.id}">${icon("map")}<span>${nb && nb.open ? "Hide nearby" : "Check nearby"}</span></button>
+        <button class="chip-btn" data-action="open-shelf-modal" data-product-id="${p.id}" data-store-id="${state.tools.storeId}" data-product-label="${escapeHtml(p.name)}">${icon("flag")}<span>Flag shelf</span></button>
+      </div>
+      ${nb && nb.open ? renderToolsNearbyPanel(nb) : ""}
+    </div>`;
+}
+
+function renderToolsNearbyPanel(nb) {
+  if (nb.loading) return `<div class="nearby-panel"><p class="muted-line">Checking nearby stores…</p></div>`;
+  if (nb.error) return `<div class="nearby-panel"><div class="inline-error"><span>${escapeHtml(nb.error)}</span></div></div>`;
+  const results = nb.results || [];
+  if (results.length === 0) return `<div class="nearby-panel"><p class="muted-line">No nearby store currently has stock.</p></div>`;
+  return `<div class="nearby-panel">${results.map(renderNearbyRow).join("")}</div>`;
+}
+
+function toggleNearbyTools(productId) {
+  if (!state.tools.storeId) return;
+  const existing = state.tools.nearbyByProduct[productId] || { open: false, loading: false, error: null, results: null };
+  existing.open = !existing.open;
+  state.tools.nearbyByProduct[productId] = existing;
+  if (existing.open && existing.results === null && !existing.loading) fetchNearbyForTools(productId);
+  else render();
+}
+
+async function fetchNearbyForTools(productId) {
+  const entry = state.tools.nearbyByProduct[productId];
+  entry.loading = true; entry.error = null; render();
+  try {
+    const res = await fetch(`/inventory/nearby?product_id=${encodeURIComponent(productId)}&store_id=${encodeURIComponent(state.tools.storeId)}`);
+    if (!res.ok) { entry.error = "Couldn't check nearby stores."; }
+    else { const body = await res.json(); entry.results = body.nearby_stores; }
+  } catch (err) {
+    entry.error = "Couldn't reach the server.";
+  } finally {
+    entry.loading = false; render();
+  }
+}
+
+/* ---- ACTIVITY view ------------------------------------------------------------ */
+
+function buildActivityView() {
+  const filterOptions = ACTIVITY_FILTERS.map((f) => `<option value="${f.v}" ${state.activity.filter === f.v ? "selected" : ""}>${f.label}</option>`).join("");
+  let body;
+  if (state.activity.error) body = bannerError(state.activity.error, "refresh-activity");
+  else if (state.activity.loading && state.activity.events.length === 0) body = skeletonList(4);
+  else if (state.activity.events.length === 0) body = emptyState("activity", "No activity yet", "Actions you take will show up here.");
+  else {
+    const sorted = [...state.activity.events].reverse();
+    body = `<div class="activity-list">${sorted.map(buildActivityRow).join("")}</div>`;
+  }
+  return `
+    <div class="filter-row">
+      <select data-role="activity-filter">${filterOptions}</select>
+    </div>
+    ${body}
+  `;
+}
+
+function buildActivityRow(e) {
+  const meta = EVENT_TYPE_META[e.event_type] || { icon: "box", cls: "neutral" };
+  return `
+    <div class="activity-row">
+      <span class="item-status-icon ${meta.cls}">${icon(meta.icon)}</span>
+      <div class="item-row-main">
+        <div class="activity-text">${escapeHtml(describeEvent(e))}</div>
+        <div class="activity-time">${e.timestamp ? escapeHtml(formatRelative(e.timestamp)) : ""}</div>
+      </div>
+    </div>`;
+}
+
+function describeEvent(e) {
+  if (e.event_type === "substitution_accepted") {
+    const orig = productDisplay(e.original_product_id).name;
+    const repl = productDisplay(e.replacement_product_id).name;
+    const same = e.original_product_id === e.replacement_product_id;
+    return same ? `Order ${e.order_id}: picked ${orig} as ordered` : `Order ${e.order_id}: substituted ${orig} with ${repl}`;
+  }
+  if (e.event_type === "item_marked_unavailable") {
+    const orig = productDisplay(e.original_product_id).name;
+    return `Order ${e.order_id}: removed ${orig} — no substitute found`;
+  }
+  if (e.event_type === "shelf_report") {
+    const prod = productDisplay(e.product_id).name;
+    const store = state.storesById[e.store_id];
+    return `${store ? store.name : e.store_id}: ${prod} reported ${SHELF_STATUS_LABELS[e.status] || e.status}`;
+  }
+  return e.event_type || "Activity";
+}
+
+async function loadActivity() {
+  state.activity.loading = true; state.activity.error = null; render();
+  try {
+    const qs = state.activity.filter ? `?event_type=${encodeURIComponent(state.activity.filter)}` : "";
+    const res = await fetch(`/audit-events${qs}`);
+    if (!res.ok) { state.activity.error = "Couldn't load activity."; return; }
+    state.activity.events = await res.json();
+  } catch (err) {
+    state.activity.error = "Couldn't reach the server.";
+  } finally {
+    state.activity.loading = false; render();
+  }
+}
+
+/* ---- shelf-report modal (shared by item flag button + Tools screen) --------- */
+
+function openShelfModal(productId, storeId, label) {
+  if (!storeId) { toast("Choose a store first."); return; }
+  state.shelfModal = { productId, storeId, label, status: null, submitting: false, error: null };
+  render();
+}
+function closeShelfModal() { state.shelfModal = null; render(); }
+function selectShelfStatus(status) { if (state.shelfModal) state.shelfModal.status = status; render(); }
+
+async function submitShelfModal() {
+  const m = state.shelfModal;
+  if (!m || !m.status || m.submitting) return;
+  m.submitting = true; m.error = null; render();
+  try {
+    const res = await fetch(`/inventory/${encodeURIComponent(m.storeId)}/${encodeURIComponent(m.productId)}/shelf-report`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: m.status }),
+    });
+    if (res.ok) {
+      const label = m.label, statusLabel = SHELF_STATUS_LABELS[m.status] || m.status;
+      state.shelfModal = null;
+      toast(`Reported "${statusLabel}" for ${label}.`);
+      render();
+      return;
+    }
+    let detail = "";
+    try { const body = await res.json(); detail = body.detail || ""; } catch (e) { /* no body */ }
+    m.error = detail || "Couldn't submit the shelf report. Please try again.";
+  } catch (err) {
+    m.error = "Couldn't reach the server. Please try again.";
+  } finally {
+    if (state.shelfModal) state.shelfModal.submitting = false;
     render();
   }
 }
 
-// ---- event delegation ---------------------------------------------------
-// A single listener on the page container, driven by data-action attributes,
-// since the whole page is rebuilt on every state change (no per-element
-// listeners to re-attach).
+function buildShelfModalHtml(m) {
+  return `
+    <div class="modal-backdrop" data-action="modal-close">
+      <div class="modal-sheet" data-action="modal-noop">
+        <div class="modal-head">
+          <div>
+            <div class="modal-title">Flag shelf issue</div>
+            <div class="modal-sub">${escapeHtml(m.label)}</div>
+          </div>
+          <button class="icon-btn" data-action="modal-close" aria-label="Close">${icon("close")}</button>
+        </div>
+        <div class="modal-status-grid">
+          ${SHELF_STATUS_OPTIONS.map((s) => `
+            <button class="status-chip ${m.status === s.v ? "is-selected" : ""}" data-action="modal-select-status" data-status="${s.v}">
+              ${icon(s.icon)}<span>${s.label}</span>
+            </button>`).join("")}
+        </div>
+        ${m.error ? `<div class="inline-error">${escapeHtml(m.error)}</div>` : ""}
+        <button class="btn btn-primary btn-full modal-submit" data-action="modal-submit" ${(!m.status || m.submitting) ? "disabled" : ""}>
+          ${m.submitting ? "Submitting…" : "Submit report"}
+        </button>
+      </div>
+    </div>`;
+}
 
-app.addEventListener("click", (event) => {
+/* ---- toast -------------------------------------------------------------------- */
+
+let toastTimer = null;
+function toast(message) {
+  state.toast = { message };
+  render();
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { state.toast = null; render(); }, 2600);
+}
+
+function buildOverlayHtml() {
+  let html = "";
+  if (state.shelfModal) html += buildShelfModalHtml(state.shelfModal);
+  if (state.toast) html += `<div class="toast">${escapeHtml(state.toast.message)}</div>`;
+  return html;
+}
+
+/* ---- navigation / refresh dispatch --------------------------------------------- */
+
+function switchView(view) {
+  state.view = view;
+  render();
+  if (view === "orders") loadOrders();
+  else if (view === "activity") loadActivity();
+}
+
+function refreshCurrent() {
+  if (state.view === "orders") loadOrders();
+  else if (state.view === "order" && state.selectedOrderId) loadOrderDetail(state.selectedOrderId);
+  else if (state.view === "activity") loadActivity();
+  else render();
+}
+
+/* ---- master render ------------------------------------------------------------- */
+
+function buildAppHtml() {
+  if (state.view === "orders") return buildOrdersView();
+  if (state.view === "order") return buildOrderDetailView();
+  if (state.view === "tools") return buildToolsView();
+  if (state.view === "activity") return buildActivityView();
+  return "";
+}
+
+function render() {
+  const app = document.getElementById("app");
+  const active = document.activeElement;
+  let restore = null;
+  if (active && app.contains(active) && active.id) {
+    restore = { id: active.id, s: active.selectionStart, e: active.selectionEnd };
+  }
+
+  document.getElementById("topbar").innerHTML = buildTopbarHtml();
+  app.innerHTML = buildAppHtml();
+  document.getElementById("bottomnav").innerHTML = buildBottomNavHtml();
+  document.getElementById("overlay").innerHTML = buildOverlayHtml();
+
+  if (restore) {
+    const el = document.getElementById(restore.id);
+    if (el) {
+      el.focus();
+      if (typeof restore.s === "number" && el.setSelectionRange) {
+        try { el.setSelectionRange(restore.s, restore.e); } catch (e) { /* ignore */ }
+      }
+    }
+  }
+}
+
+/* ---- catalog / init ------------------------------------------------------------- */
+
+async function loadCatalog() {
+  state.catalogError = null;
+  try {
+    const [productsRes, storesRes] = await Promise.all([fetch("/products"), fetch("/stores")]);
+    if (!productsRes.ok || !storesRes.ok) throw new Error("catalog fetch failed");
+    const [products, stores] = await Promise.all([productsRes.json(), storesRes.json()]);
+    state.products = products; state.productsById = indexBy(products, "id");
+    state.stores = stores; state.storesById = indexBy(stores, "store_id");
+  } catch (err) {
+    state.catalogError = "Couldn't load the store catalog. Some product details may be missing.";
+  } finally {
+    render();
+  }
+}
+
+async function init() {
+  render();
+  await loadCatalog();
+  await loadOrders();
+}
+
+/* ---- event delegation ----------------------------------------------------------- */
+
+document.addEventListener("click", (event) => {
   const el = event.target.closest("[data-action]");
   if (!el) return;
+  const { action, itemId, productId, storeId, view, status, productLabel, orderId } = el.dataset;
 
-  const { action, itemId, productId } = el.dataset;
-
-  if (action === "report-unavailable") reportUnavailable(itemId);
-  else if (action === "accept") acceptSubstitution(itemId, productId);
-  else if (action === "skip") skipRecommendation(itemId, productId);
-  else if (action === "resolve-unavailable") resolveUnavailable(itemId);
-  else if (action === "retry-accept") {
-    const st = getItemState(itemId);
-    if (st.activeAccept) acceptSubstitution(itemId, st.activeAccept.productId);
-  } else if (action === "complete-order") completeOrder();
+  switch (action) {
+    case "nav": switchView(view); break;
+    case "refresh": refreshCurrent(); break;
+    case "refresh-orders": loadOrders(); break;
+    case "refresh-activity": loadActivity(); break;
+    case "retry-catalog": loadCatalog(); break;
+    case "select-order": selectOrder(orderId); break;
+    case "mark-picked": confirmPick(itemId, productId, "pick"); break;
+    case "report-unavailable": reportUnavailable(itemId); break;
+    case "cancel-unavailable": cancelUnavailable(itemId); break;
+    case "accept-substitute": confirmPick(itemId, productId, "substitute"); break;
+    case "skip-substitute": skipRecommendation(itemId, productId); break;
+    case "retry-accept": {
+      const st = getItemState(itemId);
+      if (st.activeAccept) confirmPick(itemId, st.activeAccept.productId, st.activeAccept.context);
+      break;
+    }
+    case "remove-item": removeItem(itemId); break;
+    case "toggle-nearby": toggleNearby(itemId, productId, storeId); break;
+    case "retry-nearby": fetchNearbyForItem(itemId, productId, storeId); break;
+    case "toggle-nearby-tools": toggleNearbyTools(productId); break;
+    case "open-shelf-modal": openShelfModal(productId, storeId, productLabel); break;
+    case "modal-close": closeShelfModal(); break;
+    case "modal-noop": break;
+    case "modal-select-status": selectShelfStatus(status); break;
+    case "modal-submit": submitShelfModal(); break;
+    case "complete-order": completeOrder(); break;
+  }
 });
 
-document.getElementById("refresh-btn").addEventListener("click", loadOrder);
+document.addEventListener("change", (event) => {
+  const el = event.target.closest("[data-role]");
+  if (!el) return;
+  const role = el.dataset.role;
+  if (role === "orders-store-filter") { state.ordersFilter.storeId = el.value; loadOrders(); }
+  else if (role === "orders-status-filter") { state.ordersFilter.status = el.value; loadOrders(); }
+  else if (role === "tools-store-select") { state.tools.storeId = el.value; render(); }
+  else if (role === "activity-filter") { state.activity.filter = el.value; loadActivity(); }
+});
 
-render();
-loadOrder();
+document.addEventListener("input", (event) => {
+  const el = event.target.closest("[data-role]");
+  if (!el) return;
+  if (el.dataset.role === "tools-search") { state.tools.search = el.value; render(); }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && state.shelfModal) closeShelfModal();
+});
+
+init();
 </script>
 </body>
 </html>

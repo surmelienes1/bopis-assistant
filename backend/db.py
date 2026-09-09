@@ -219,6 +219,56 @@ def get_store_inventory_confidence(store_id: str) -> float | None:
         return store["inventory_confidence"] if store is not None else None
 
 
+def list_stores() -> list[dict[str, str]]:
+    """The known store network's id + display name only -- never
+    distances_km or inventory_confidence, which are scoring internals
+    (see get_store_distances()/get_store_inventory_confidence()), not
+    directory data. Powers a store picker in the frontend's two
+    order-independent tools (nearby-stock lookup, shelf reporting),
+    which need "which store am I standing in" the way a real
+    auth/session would supply automatically in production (out of
+    scope here -- see the design doc's assumptions).
+    """
+    _ensure_initialized()
+    with _DB_LOCK:
+        return [
+            {"store_id": s["store_id"], "name": s.get("name", s["store_id"])}
+            for s in _STORES.values()
+        ]
+
+
+def list_products() -> list[Product]:
+    """The full product catalog, as copies. Read-only, no filtering --
+    the catalog is this prototype's entire seed set (18 items), small
+    enough for the frontend to fetch once and use as a local lookup:
+    turning a bare product_id into a display name/brand/price
+    wherever one shows up (order items, recommendation cards, nearby-
+    store results), and as the picker source for the two tools that
+    aren't scoped to a specific order's item list.
+    """
+    _ensure_initialized()
+    with _DB_LOCK:
+        return [p.model_copy() for p in _PRODUCTS.values()]
+
+
+def list_orders(
+    store_id: str | None = None, status: OrderStatus | None = None
+) -> list[Order]:
+    """All orders, as copies, optionally filtered by store_id and/or
+    status (design doc §9's `GET /orders?store_id&status`). Powers the
+    associate's order list/picker -- the frontend no longer hardcodes
+    a single order id.
+    """
+    _ensure_initialized()
+    with _DB_LOCK:
+        orders = [o.model_copy(deep=True) for o in _ORDERS.values()]
+    if store_id is not None:
+        orders = [o for o in orders if o.store_id == store_id]
+    if status is not None:
+        orders = [o for o in orders if o.status == status]
+    return orders
+
+
 def list_products_by_category(
     category: str, exclude_product_id: str | None = None
 ) -> list[Product]:

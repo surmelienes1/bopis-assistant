@@ -60,6 +60,27 @@ plain audit-log write. Both are search/logging problems, not
 generative ones — see this file's own docstring above and the design
 doc's §6.1 for the pattern this project uses to decide where the model
 belongs at all.
+
+This round adds a small set of read-only catalog/directory endpoints
+so the frontend can be a real associate app instead of a single
+hardcoded order id: GET /products, GET /orders, GET /stores, and
+GET /audit-events. Every one of these is a plain, unfiltered (or
+trivially filtered) pass-through to a db.py read function that already
+existed or was added alongside it — no new business logic, no new
+mutation path, nothing that touches order/inventory state. They exist
+because two of this file's tools (nearby-stock lookup, shelf
+reporting) are explicitly NOT scoped to a specific order's item list —
+an associate can look up any product's nearby availability or report a
+shelf issue on any product, independent of what they're currently
+picking — so the frontend needs a catalog and a store directory to
+build those pickers from, the same way a real "Product Catalog Svc"
+and "Inventory Svc" would supply them (design doc §5).
+
+report_item_unavailable() below also now enriches each validated
+recommendation with display fields (name/brand/price) pulled from the
+SAME trusted candidate_list already used for ranking/validation — see
+that route's docstring for exactly why this is safe and doesn't touch
+ranking_validation.py's own {product_id, score, reason} contract.
 """
 
 from __future__ import annotations
@@ -127,10 +148,21 @@ app.add_middleware(
 
 
 class SubstitutionRequest(BaseModel):
-    """Request body for POST /orders/{order_id}/items/{item_id}/substitution."""
+    """Request body for POST /orders/{order_id}/items/{item_id}/substitution.
+
+    `ai_involved` is optional (default None, "unknown") and is passed
+    straight through to transactions.accept_substitution() for the
+    audit event only -- see that function's docstring. It records
+    whether this acceptance came from the .../unavailable
+    recommendation flow, not whether the accepted product actually
+    differs from the one originally ordered; transactions.py decides
+    PICKED vs SUBSTITUTED itself, independently, by comparing
+    product_id against the order line's own product_id.
+    """
 
     product_id: str
     idempotency_key: str
+    ai_involved: bool | None = None
 
 
 class ResolveUnavailableRequest(BaseModel):
@@ -234,12 +266,64 @@ def read_root() -> FileResponse:
     return FileResponse(_FRONTEND_INDEX)
 
 
+@app.get("/orders", response_model=list[Order])
+def list_orders(store_id: str | None = None, status: OrderStatus | None = None) -> list[Order]:
+    """Assigned orders, optionally filtered by store_id/status (design
+    doc §9's `GET /orders?store_id&status`). Powers the associate's
+    order list/picker screen -- the frontend no longer hardcodes a
+    single order id. A thin pass-through to db.list_orders(); no
+    filtering logic lives here.
+    """
+    return db.list_orders(store_id=store_id, status=status)
+
+
 @app.get("/orders/{order_id}", response_model=Order)
 def get_order(order_id: str) -> Order:
     order = db.get_order(order_id)
     if order is None:
         raise HTTPException(status_code=404, detail=f"Order {order_id!r} not found.")
     return order
+
+
+@app.get("/products", response_model=list[Product])
+def list_products() -> list[Product]:
+    """The full product catalog. Read-only, unfiltered -- this
+    prototype's whole seed catalog is 18 items, small enough for the
+    frontend to fetch once and use as a local lookup (product_id ->
+    name/brand/price) wherever a bare product_id shows up, and as the
+    picker source for the nearby-stock and shelf-report tools, neither
+    of which is scoped to a specific order's item list.
+    """
+    return db.list_products()
+
+
+@app.get("/stores")
+def list_stores() -> list[dict[str, str]]:
+    """The known store directory (id + display name only -- never
+    distances or inventory_confidence, which are GET /inventory/
+    nearby's scoring internals, not directory data). Powers the store
+    picker the frontend's order-independent tools use to answer
+    "which store am I at" -- a real deployment would get this from
+    the associate's authenticated session (see design doc's FR-1 /
+    Assumptions; auth is explicitly out of scope for this prototype).
+    """
+    return db.list_stores()
+
+
+@app.get("/audit-events")
+def list_audit_events(event_type: str | None = None) -> list[dict]:
+    """Read-only snapshot of the in-memory audit log (design doc §10),
+    optionally filtered by event_type. Powers a small "recent
+    activity" feed in the frontend (e.g. shelf reports just
+    submitted this session) -- nothing returned here is authoritative
+    order/inventory state, it's the same append-only log
+    transactions.py and this file's other routes already write to via
+    db.append_audit_event().
+    """
+    events = db.list_audit_events()
+    if event_type is not None:
+        events = [e for e in events if e.get("event_type") == event_type]
+    return events
 
 
 @app.post("/orders/{order_id}/items/{item_id}/unavailable")
@@ -249,6 +333,20 @@ def report_item_unavailable(order_id: str, item_id: str) -> list[dict]:
     -> validate pipeline and returns the validated recommendation list
     -- see the module docstring for the exact call order and the
     failure-handling boundary around ai_ranking.rank_candidates().
+
+    Each returned dict is ranking_validation.py's own {product_id,
+    score, reason} PLUS display fields (name, brand, price) merged in
+    below, after validation, from the SAME trusted `candidate_list`
+    already used for ranking. This is safe precisely because it's
+    read-only decoration, not a new trust boundary: every product_id
+    in the validated result is already guaranteed (by
+    ranking_validation.py's own invariant) to be a member of
+    candidate_list, so the merge is a plain dict lookup that can never
+    miss and never introduces a product the pipeline didn't already
+    approve. ranking_validation.py's own return contract is untouched
+    -- this enrichment happens here, at the HTTP edge, purely so the
+    frontend can show "Sprite 1.5L -- Coca-Cola -- $2.39" instead of a
+    bare SKU.
     """
     order = db.get_order(order_id)
     if order is None:
@@ -301,9 +399,18 @@ def report_item_unavailable(order_id: str, item_id: str) -> list[dict]:
         )
         raw = None
 
-    return ranking_validation.validate_recommendations(
+    validated = ranking_validation.validate_recommendations(
         raw, candidate_list, original_dict
     )
+
+    candidates_by_id = {c["product_id"]: c for c in candidate_list}
+    for rec in validated:
+        display = candidates_by_id.get(rec["product_id"], {})
+        rec["name"] = display.get("name")
+        rec["brand"] = display.get("brand")
+        rec["price"] = display.get("price")
+
+    return validated
 
 
 @app.post("/orders/{order_id}/items/{item_id}/resolve-unavailable")
@@ -427,6 +534,7 @@ def accept_substitution(
         item_id=item_id,
         product_id=body.product_id,
         idempotency_key=body.idempotency_key,
+        ai_involved=body.ai_involved,
     )
     status_code = 200 if result.get("status") == "ok" else 409
     return JSONResponse(status_code=status_code, content=result)
