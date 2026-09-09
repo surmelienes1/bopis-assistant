@@ -395,6 +395,28 @@
   .status-chip.is-selected { background: var(--accent-soft-bg); border-color: var(--accent); color: var(--accent-soft-text); }
   .status-chip.is-selected .icon { color: var(--accent-soft-text); }
   .modal-submit { margin-top: 4px; }
+  
+  .stock-available,
+.stock-unavailable,
+.stock-checking {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.stock-available {
+  color: #16803c;
+}
+
+.stock-unavailable {
+  color: #c62828;
+}
+
+.stock-checking {
+  color: var(--muted, #6b7280);
+}
 </style>
 </head>
 <body>
@@ -510,7 +532,7 @@ const state = {
   selectedOrderId: null, currentOrder: null, orderLoading: false, orderError: null,
   completing: false, completeError: null, // { message, openItems }
 
-  tools: { storeId: "", search: "", nearbyByProduct: {} },
+  tools: { storeId: "", search: "", nearbyByProduct: {}, inventoryByProduct: {}, inventoryLoading: false, inventoryError: null },
   activity: { events: [], loading: false, error: null, filter: "" },
 
   shelfModal: null, // { productId, storeId, label, status, submitting, error }
@@ -521,6 +543,7 @@ const itemState = {};
 function freshItemState() {
   return {
     recommendations: null, loadingUnavailable: false, unavailableError: null,
+    currentStock: null, currentStockLoading: false, currentStockError: null,
     activeAccept: null, accepting: false, acceptError: null, conflictBanner: null,
     unavailableProductIds: new Set(),
     resolving: false, resolveError: null,
@@ -730,21 +753,42 @@ async function loadOrderDetail(orderId, opts) {
   state.orderLoading = true;
   if (!opts.silent) state.orderError = null;
   render();
+
   try {
     const res = await fetch(`/orders/${encodeURIComponent(orderId)}`);
+
     if (!res.ok) {
-      state.orderError = state.currentOrder ? "Couldn't refresh the latest order state." : "Couldn't load this order.";
+      state.orderError = state.currentOrder
+        ? "Couldn't refresh the latest order state."
+        : "Couldn't load this order.";
       return;
     }
+
     const order = await res.json();
     state.currentOrder = order;
     state.orderError = null;
+
     const idx = state.orders.findIndex((o) => o.id === order.id);
-    if (idx !== -1) state.orders[idx] = order; else state.orders.push(order);
+    if (idx !== -1) state.orders[idx] = order;
+    else state.orders.push(order);
+
+    // Refresh authoritative current-store stock for items that still need action.
+    const pendingItems = order.items.filter(
+      (item) => !RESOLVED_STATUSES.has(item.status)
+    );
+
+    await Promise.all(
+      pendingItems.map((item) =>
+        loadCurrentStockForItem(item.id, item.product_id, order.store_id)
+      )
+    );
   } catch (err) {
-    state.orderError = state.currentOrder ? "Couldn't refresh the latest order state." : "Couldn't load this order.";
+    state.orderError = state.currentOrder
+      ? "Couldn't refresh the latest order state."
+      : "Couldn't load this order.";
   } finally {
-    state.orderLoading = false; render();
+    state.orderLoading = false;
+    render();
   }
 }
 
@@ -826,15 +870,40 @@ function renderResolvedItem(item) {
 function renderPendingItem(item, order) {
   const disp = productDisplay(item.product_id);
   const st = getItemState(item.id);
+
+  const stockDisplay = st.currentStockLoading
+    ? `
+      <div class="stock-checking" style="margin-top:5px;">
+        Checking current store stock…
+      </div>`
+    : st.currentStock != null
+      ? `
+        <div class="${st.currentStock > 0 ? "stock-available" : "stock-unavailable"}" style="margin-top:5px;">
+          ${st.currentStock > 0 ? icon("check") : icon("xcircle")}
+          <span>${st.currentStock > 0
+            ? `${formatQty(st.currentStock)} available at this store`
+            : "Out of stock at this store"}</span>
+        </div>`
+      : "";
+
   return `
     <div class="item-card">
       <div class="item-card-top">
         <div class="item-name">${escapeHtml(disp.name)}</div>
         ${disp.brand ? `<div class="item-brand">${escapeHtml(disp.brand)}</div>` : ""}
-        <div class="item-meta">Qty ${formatQty(item.requested_quantity)}${disp.price != null ? " · " + formatMoney(disp.price) : ""}</div>
+        <div class="item-meta">
+          Qty ${formatQty(item.requested_quantity)}${disp.price != null ? " · " + formatMoney(disp.price) : ""}
+        </div>
+
+        ${stockDisplay}
       </div>
+
       ${st.conflictBanner ? `<div class="banner banner-warning" style="margin-top:8px;">${escapeHtml(st.conflictBanner)}</div>` : ""}
-      ${st.recommendations === null ? renderInitialActions(item, st) : renderRecommendationsPanel(item, st)}
+
+      ${st.recommendations === null
+        ? renderInitialActions(item, st)
+        : renderRecommendationsPanel(item, st)}
+
       ${renderNearbyToggleAndPanel(item, order, st)}
     </div>`;
 }
@@ -1083,6 +1152,35 @@ async function removeItem(itemId) {
   }
 }
 
+async function loadCurrentStockForItem(itemId, productId, storeId) {
+  const st = getItemState(itemId);
+  st.currentStockLoading = true;
+  st.currentStockError = null;
+  render();
+
+  try {
+    const res = await fetch(
+      `/inventory/current?store_id=${encodeURIComponent(storeId)}&product_id=${encodeURIComponent(productId)}`
+    );
+
+    if (!res.ok) {
+      st.currentStockError = "Couldn't load current stock.";
+      st.currentStock = null;
+      return;
+    }
+
+    const body = await res.json();
+    st.currentStock = Number(body.available_quantity) || 0;
+  } catch (err) {
+    st.currentStockError = "Couldn't reach the server.";
+    st.currentStock = null;
+  } finally {
+    st.currentStockLoading = false;
+    render();
+  }
+}
+
+
 /* ---- nearby-store lookup (item context) ------------------------------------ */
 
 function toggleNearby(itemId, productId, storeId) {
@@ -1173,14 +1271,49 @@ function buildToolsView() {
 
 function buildToolsProductRow(p) {
   const nb = state.tools.nearbyByProduct[p.id];
+  const stock = state.tools.inventoryByProduct[p.id];
+  const stockLoading = state.tools.inventoryLoading;
+
+  const stockText = stockLoading
+    ? "Checking stock…"
+    : stock == null
+      ? "Stock unavailable"
+      : stock > 0
+        ? `${formatQty(stock)} in stock`
+        : "Out of stock";
+
+  const stockClass = stock == null
+    ? "stock-checking"
+    : stock > 0
+      ? "stock-available"
+      : "stock-unavailable";
+
   return `
     <div class="tool-product-row">
       <div class="item-name">${escapeHtml(p.name)}</div>
       <div class="item-brand">${escapeHtml(p.brand)} · ${formatMoney(p.price)}</div>
-      <div class="tool-product-actions">
-        <button class="chip-btn" data-action="toggle-nearby-tools" data-product-id="${p.id}">${icon("map")}<span>${nb && nb.open ? "Hide nearby" : "Check nearby"}</span></button>
-        <button class="chip-btn" data-action="open-shelf-modal" data-product-id="${p.id}" data-store-id="${state.tools.storeId}" data-product-label="${escapeHtml(p.name)}">${icon("flag")}<span>Flag shelf</span></button>
+
+      <div class="${stockClass}" style="margin-top:4px;">
+        ${stock > 0 ? icon("check") : stock === 0 ? icon("xcircle") : ""}
+        <span>${escapeHtml(stockText)}</span>
       </div>
+
+      <div class="tool-product-actions">
+        <button class="chip-btn" data-action="toggle-nearby-tools" data-product-id="${p.id}">
+          ${icon("map")}
+          <span>${nb && nb.open ? "Hide nearby" : "Check nearby"}</span>
+        </button>
+
+        <button class="chip-btn"
+          data-action="open-shelf-modal"
+          data-product-id="${p.id}"
+          data-store-id="${state.tools.storeId}"
+          data-product-label="${escapeHtml(p.name)}">
+          ${icon("flag")}
+          <span>Flag shelf</span>
+        </button>
+      </div>
+
       ${nb && nb.open ? renderToolsNearbyPanel(nb) : ""}
     </div>`;
 }
@@ -1192,6 +1325,36 @@ function renderToolsNearbyPanel(nb) {
   if (results.length === 0) return `<div class="nearby-panel"><p class="muted-line">No nearby store currently has stock.</p></div>`;
   return `<div class="nearby-panel">${results.map(renderNearbyRow).join("")}</div>`;
 }
+
+async function loadToolsInventory() {
+  if (!state.tools.storeId) return;
+
+  state.tools.inventoryLoading = true;
+  state.tools.inventoryError = null;
+  render();
+
+  try {
+    const res = await fetch(
+      `/inventory/current?store_id=${encodeURIComponent(state.tools.storeId)}`
+    );
+
+    if (!res.ok) {
+      state.tools.inventoryError = "Couldn't load current store stock.";
+      state.tools.inventoryByProduct = {};
+      return;
+    }
+
+    const body = await res.json();
+    state.tools.inventoryByProduct = body.inventory || {};
+  } catch (err) {
+    state.tools.inventoryError = "Couldn't reach the server.";
+    state.tools.inventoryByProduct = {};
+  } finally {
+    state.tools.inventoryLoading = false;
+    render();
+  }
+}
+
 
 function toggleNearbyTools(productId) {
   if (!state.tools.storeId) return;
@@ -1477,7 +1640,14 @@ document.addEventListener("change", (event) => {
   const role = el.dataset.role;
   if (role === "orders-store-filter") { state.ordersFilter.storeId = el.value; loadOrders(); }
   else if (role === "orders-status-filter") { state.ordersFilter.status = el.value; loadOrders(); }
-  else if (role === "tools-store-select") { state.tools.storeId = el.value; render(); }
+  else if (role === "tools-store-select") {
+  state.tools.storeId = el.value;
+  state.tools.inventoryByProduct = {};
+  state.tools.inventoryError = null;
+  state.tools.nearbyByProduct = {};
+  render();
+  if (state.tools.storeId) loadToolsInventory();
+}
   else if (role === "activity-filter") { state.activity.filter = el.value; loadActivity(); }
 });
 

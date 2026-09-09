@@ -587,13 +587,68 @@ def complete_order(order_id: str) -> JSONResponse:
 
 
 # ----------------------------------------------------------------------
-# Prompt 10 -- deterministic, LLM-free stretch endpoints (design doc
-# §6.3 nearby-store availability, §6.4 shelf-depletion reporting).
-# Both are new, independent routes: neither reads from nor writes to
-# any order/item/substitution state above, and neither is on the
-# .../unavailable -> candidates -> ai_ranking -> ranking_validation
-# pipeline.
+# Prompt 10 -- deterministic, LLM-free inventory capabilities (design
+# doc §6.3 nearby-store availability, §6.4 shelf-depletion reporting).
+#
+# Both inventory endpoints are independent of the substitution
+# pipeline. They read trusted inventory/store metadata or append an
+# audit event; neither calls the LLM.
 # ----------------------------------------------------------------------
+
+
+@app.get("/inventory/current")
+def get_current_inventory(store_id: str, product_id: str | None = None) -> dict:
+    """Return authoritative current-store inventory for the associate UI.
+
+    This is a deterministic, LLM-free lookup over db.py's trusted
+    inventory state. It exists so the frontend can answer the most
+    basic operational question first: "How much stock do we currently
+    have at the store I am working in?"
+
+    If product_id is supplied, return the quantity for that product.
+    If product_id is omitted, return the current inventory quantities
+    for every catalog product carried by the selected store.
+
+    A missing inventory row is treated as zero available stock. This
+    deliberately does not create an inventory row or mutate state:
+    absence of a row means the store does not currently have a
+    stock-bearing inventory record for that product.
+
+    This endpoint exposes raw available quantity only. It does not
+    expose inventory versioning or confidence metadata because those
+    are backend consistency/scoring concerns rather than associate UI
+    concerns.
+    """
+    if not db.store_exists(store_id):
+        raise HTTPException(
+            status_code=404, detail=f"Store {store_id!r} not found."
+        )
+
+    if product_id is not None:
+        if db.get_product(product_id) is None:
+            raise HTTPException(
+                status_code=404, detail=f"Product {product_id!r} not found."
+            )
+
+        inventory = db.get_inventory(product_id, store_id)
+
+        return {
+            "store_id": store_id,
+            "product_id": product_id,
+            "available_quantity": inventory.quantity if inventory is not None else 0,
+        }
+
+    inventory_by_product = {}
+    for product in db.list_products():
+        inventory = db.get_inventory(product.id, store_id)
+        inventory_by_product[product.id] = (
+            inventory.quantity if inventory is not None else 0
+        )
+
+    return {
+        "store_id": store_id,
+        "inventory": inventory_by_product,
+    }
 
 
 @app.get("/inventory/nearby")

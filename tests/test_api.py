@@ -129,6 +129,84 @@ class TestCatalogAndDirectoryEndpoints:
 
 
 # ----------------------------------------------------------------------
+# GET /inventory/current
+# ----------------------------------------------------------------------
+
+
+class TestCurrentInventory:
+    def test_known_product_returns_authoritative_quantity(self, api_client):
+        resp = api_client.get(
+            "/inventory/current",
+            params={
+                "store_id": "STORE-1",
+                "product_id": "SKU-COKE-ORIG-150",
+            },
+        )
+
+        assert resp.status_code == 200
+        assert resp.json()["store_id"] == "STORE-1"
+        assert resp.json()["product_id"] == "SKU-COKE-ORIG-150"
+        assert resp.json()["available_quantity"] > 0
+
+    def test_missing_inventory_row_is_reported_as_zero(self, api_client):
+        # STORE-5 intentionally carries only a smaller grab-and-go
+        # assortment. A valid catalog product with no inventory row
+        # therefore means zero available stock.
+        resp = api_client.get(
+            "/inventory/current",
+            params={
+                "store_id": "STORE-5",
+                "product_id": "SKU-HONEY-NATURAL-350",
+            },
+        )
+
+        assert resp.status_code == 200
+        assert resp.json() == {
+            "store_id": "STORE-5",
+            "product_id": "SKU-HONEY-NATURAL-350",
+            "available_quantity": 0,
+        }
+
+    def test_without_product_id_returns_full_store_inventory(self, api_client):
+        resp = api_client.get(
+            "/inventory/current",
+            params={"store_id": "STORE-5"},
+        )
+
+        assert resp.status_code == 200
+        body = resp.json()
+
+        assert body["store_id"] == "STORE-5"
+        assert "inventory" in body
+        assert len(body["inventory"]) == 59
+
+        assert body["inventory"]["SKU-PEPSI-REG-150"] > 0
+        assert body["inventory"]["SKU-HONEY-NATURAL-350"] == 0
+
+    def test_unknown_product_404(self, api_client):
+        resp = api_client.get(
+            "/inventory/current",
+            params={
+                "store_id": "STORE-1",
+                "product_id": "SKU-NOPE",
+            },
+        )
+
+        assert resp.status_code == 404
+
+    def test_unknown_store_404(self, api_client):
+        resp = api_client.get(
+            "/inventory/current",
+            params={
+                "store_id": "STORE-NOPE",
+                "product_id": "SKU-COKE-ZERO-150",
+            },
+        )
+
+        assert resp.status_code == 404
+
+
+# ----------------------------------------------------------------------
 # POST .../unavailable -- the recommend pipeline
 # ----------------------------------------------------------------------
 
