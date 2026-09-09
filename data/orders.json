@@ -557,7 +557,7 @@
       "id": "ORD-1013",
       "customer_id": "CUST-2013",
       "store_id": "STORE-2",
-      "status": "EXCEPTION",
+      "status": "ASSIGNED",
       "pickup_deadline": "2026-09-09T14:00:00+02:00",
       "created_at": "2026-09-09T08:00:00+02:00",
       "updated_at": "2026-09-09T08:50:00+02:00",
